@@ -1,0 +1,80 @@
+name: delivery-ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  delivery:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Skill from portable zip (clean machine)
+        shell: pwsh
+        run: |
+          python scripts/build_release.py
+          if (Test-Path dist/MAFS_Skill_1.0.0_Portable.zip) {
+            Write-Host "portable zip built"
+          } else {
+            Write-Error "portable zip missing"
+            exit 1
+          }
+
+      - name: Stdlib-only bootstrap check
+        shell: pwsh
+        run: |
+          python scripts/verify_delivery.py --report docs/MAFS_SKILL_1_0_DELIVERY_METRICS.json | Tee-Object -FilePath _verify.json
+          $report = Get-Content _verify.json | ConvertFrom-Json
+          if ($report.portability.external_python_bootstrap_dependencies -ne 0) {
+            Write-Error "external python bootstrap dependency detected"
+            exit 1
+          }
+
+      - name: Dry-run install
+        shell: pwsh
+        run: |
+          python scripts/install.py --target codex --dry-run
+          python scripts/install.py --target agents --dry-run
+          python scripts/install.py --target-dir _dry_run_target --dry-run
+
+      - name: Generic target install (clean machine)
+        shell: pwsh
+        run: |
+          python scripts/install.py --target-dir _clean_install
+          if (Test-Path _clean_install/mafs-skill-1-0/SKILL.md) {
+            Write-Host "clean install OK"
+          } else {
+            Write-Error "clean install did not produce skill core"
+            exit 1
+          }
+
+      - name: Runtime resolver
+        env:
+          MAFS_RUNTIME_HOME: ${{ runner.temp }}/mafs-runtime
+        shell: pwsh
+        run: |
+          python scripts/resolve_runtime_dependencies.py
+          if ($LASTEXITCODE -ne 0) { Write-Error "resolver failed"; exit 1 }
+
+      - name: Runtime doctor
+        env:
+          MAFS_RUNTIME_HOME: ${{ runner.temp }}/mafs-runtime
+        shell: pwsh
+        run: |
+          python scripts/doctor.py
+          if ($LASTEXITCODE -ne 0) { Write-Error "doctor failed"; exit 1 }
+
+      - name: Test suite
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p "test_*.py" -v

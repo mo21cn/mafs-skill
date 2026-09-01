@@ -1,0 +1,49 @@
+# MAFS Skill 1.0 — OpenAI / Codex discovery adapter
+#
+# This file is consumed by OpenAI/Codex skill discovery. It is NOT
+# the canonical Skill core. The canonical core is SKILL.md in the
+# same directory. This adapter is intentionally thin and points at
+# the canonical core without redefining it.
+#
+# All rules in SKILL.md (bootstrap gate, authority rules, frozen
+# workflow) apply to any consumer of this Skill — including Codex.
+name: mafs-skill-1-0
+display_name: MAFS Skill 1.0
+version: 1.0.0
+description: |
+  MAFS Skill 1.0 — multi-axis falsification search workflow, packaged
+  for portable delivery. Performs automatic runtime resolution of
+  CQC (P0..P5 producer) and MAFS (P0..P3 runtime) at exact pinned
+  commits; never modifies user repositories; supports clean-machine
+  installation with stdlib-only bootstrap.
+author: Local Claw (mo21cn)
+license: see repository LICENSE
+
+# Path C: this Skill is a delivery layer, not a third scientific module
+path_integration: C
+repository: mo21cn/mafs-skill
+entrypoint: SKILL.md
+
+# Required companion files (validated by install.py)
+required_files:
+  - SKILL.md
+  - agents/openai.yaml
+  - references/BASELINES.md
+  - references/CQC_ARTIFACT_CHAIN.md
+  - references/MAFS_RUNTIME_BOUNDARY.md
+  - references/AUTHORITY_RULES.md
+
+# Frozen source baselines (mirrored from release/BASELINES.json)
+frozen_source_baselines:
+  cqc:
+    repo: https://github.com/mo21cn/mafs-cqc
+    commit: b34a12295bb4522ff027724630f244f2438c19e6
+  mafs:
+    repo: https://github.com/mo21cn/mafs-v3-p0
+    commit: cd09699fc8cc160ab5cfff00a41e714961dd2109
+
+# Bootstrap constraint
+bootstrap:
+  python_external_dependencies: []
+  git_required: true
+  auto_install_system_software: false

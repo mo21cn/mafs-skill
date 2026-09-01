@@ -1,0 +1,23 @@
+{
+  "schema_version": "mafs-skill-baselines.v1",
+  "product": "MAFS Skill 1.0",
+  "version": "1.0.0",
+  "cqc": {
+    "name": "mafs-cqc",
+    "repo": "https://github.com/mo21cn/mafs-cqc",
+    "commit": "b34a12295bb4522ff027724630f244f2438c19e6"
+  },
+  "mafs": {
+    "name": "mafs-v3-p0",
+    "repo": "https://github.com/mo21cn/mafs-v3-p0",
+    "commit": "cd09699fc8cc160ab5cfff00a41e714961dd2109"
+  },
+  "rules": {
+    "floating_branches_allowed": false,
+    "substitute_pins_allowed": false,
+    "dev_branch_substitute_allowed": false,
+    "vendor_copy_allowed": false,
+    "submodule_allowed": false,
+    "auto_install_system_software_allowed": false
+  }
+}

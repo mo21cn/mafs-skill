@@ -1,0 +1,45 @@
+{
+  "schema_version": "mafs-skill-delivery-manifest.v1",
+  "product": "MAFS Skill 1.0",
+  "version": "1.0.0",
+  "machine_name": "mafs-skill-1-0",
+  "cqc": {
+    "repo": "https://github.com/mo21cn/mafs-cqc",
+    "pin": "b34a12295bb4522ff027724630f244f2438c19e6"
+  },
+  "mafs": {
+    "repo": "https://github.com/mo21cn/mafs-v3-p0",
+    "pin": "cd09699fc8cc160ab5cfff00a41e714961dd2109"
+  },
+  "required_files": [
+    "VERSION",
+    "README.md",
+    "skill/mafs-skill-1-0/SKILL.md",
+    "skill/mafs-skill-1-0/agents/openai.yaml",
+    "skill/mafs-skill-1-0/references/BASELINES.md",
+    "skill/mafs-skill-1-0/references/CQC_ARTIFACT_CHAIN.md",
+    "skill/mafs-skill-1-0/references/MAFS_RUNTIME_BOUNDARY.md",
+    "skill/mafs-skill-1-0/references/AUTHORITY_RULES.md",
+    "scripts/install.py",
+    "scripts/resolve_runtime_dependencies.py",
+    "scripts/doctor.py",
+    "scripts/verify_delivery.py",
+    "scripts/build_release.py"
+  ],
+  "bootstrap_scripts": [
+    "scripts/install.py",
+    "scripts/resolve_runtime_dependencies.py",
+    "scripts/doctor.py",
+    "scripts/verify_delivery.py",
+    "scripts/build_release.py"
+  ],
+  "python_external_bootstrap_dependencies": [],
+  "git_required": true,
+  "offline_complete": false,
+  "portable_package": {
+    "path": "dist\\MAFS_Skill_1.0.0_Portable.zip",
+    "sha256": "4151d4576fcaa0212bf9b78cc5efd77bfec48f8e00e343eea90e03e1d908250e",
+    "size_bytes": 85172
+  },
+  "no_self_hash_loop": true
+}

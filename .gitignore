@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+_test_*.txt
+_test_*.tmp
+_*.local.tmp
+_*.tmp.local
+_test_out*.txt
+_test_final.txt
+_test_output.txt
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+Thumbs.db
