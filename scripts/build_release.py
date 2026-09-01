@@ -1,23 +1,44 @@
 #!/usr/bin/env python
-"""MAFS Skill 1.0 — portable release builder (contract §19).
+"""MAFS Skill 1.0 — deterministic portable release builder (RA1 §15).
 
-Produces:
-    dist/MAFS_Skill_<VERSION>_Portable.zip
-    dist/MAFS_Skill_<VERSION>_Portable.zip.sha256
+The same committed product bytes must generate the same ZIP SHA-256
+on Windows, Linux, and across repeated local builds.
 
-The zip is installable without cloning `mafs-skill`. It contains the
-package / install / bootstrap material, but NOT copies of the CQC /
-MAFS repositories. This is not vendoring (contract §19 final note).
+Normalizations applied (RA1 §15):
+    file ordering                sorted
+    POSIX archive paths          forward slashes only
+    ZIP timestamps               fixed (1980-01-01 00:00:00)
+    ZIP creator system           fixed (0 = MS-DOS / FAT)
+    external_attr / file perms   fixed
+    compression                  ZIP_DEFLATED + fixed compresslevel
+    filename encoding            UTF-8 (no host codepage leak)
+    directory entries            not emitted (member-only)
 
-Stdlib only.
+Minimal portable surface (RA1 §16):
+    mafs-skill/
+    ├── VERSION
+    ├── README.md
+    ├── skill/
+    ├── scripts/
+    │   ├── install.py
+    │   ├── resolve_runtime_dependencies.py
+    │   └── doctor.py
+    └── release/
+        ├── BASELINES.json
+        ├── DELIVERY_MANIFEST.json
+        └── SHA256SUMS.txt
+
+Internal SHA256SUMS.txt covers portable content only; it does NOT
+include the final ZIP (RA1 §17 — no self-hash loop).
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
-import os
 import sys
+import time
 import zipfile
 from pathlib import Path
 
@@ -27,18 +48,25 @@ BASELINES = PKG / "release" / "BASELINES.json"
 MANIFEST_OUT = PKG / "release" / "DELIVERY_MANIFEST.json"
 SHASUMS_OUT = PKG / "release" / "SHA256SUMS.txt"
 
-# What we include in the zip (paths relative to PKG).
-# We intentionally exclude `dist/` itself and `.git/`.
-ZIP_INCLUDE = [
+# Fixed ZipInfo normalization values (RA1 §15).
+FIXED_DOS_TIME = (1980, 1, 1, 0, 0, 0)  # 1980-01-01 00:00:00 (DOS epoch)
+FIXED_CREATE_SYSTEM = 0                  # MS-DOS / FAT
+FIXED_COMPRESS_LEVEL = 9
+FIXED_EXTERNAL_ATTR = 0o644 << 16       # regular file, rw-r--r--
+
+# Minimal portable surface (RA1 §16). Tests, build scripts, and
+# delivery docs do NOT go into the portable ZIP.
+PORTABLE_INCLUDE = (
     "VERSION",
     "README.md",
     "skill",
-    "scripts",
+    "scripts/install.py",
+    "scripts/resolve_runtime_dependencies.py",
+    "scripts/doctor.py",
     "release/BASELINES.json",
-    "tests",
-    "docs",
-    ".github/workflows/delivery-ci.yml",
-]
+    "release/DELIVERY_MANIFEST.json",
+    "release/SHA256SUMS.txt",
+)
 
 
 def file_sha256(p: Path) -> str:
@@ -47,33 +75,98 @@ def file_sha256(p: Path) -> str:
     return h.hexdigest()
 
 
+def canonical_file_list() -> list[tuple[Path, str]]:
+    """Return [(abs_path, arcname_in_zip), ...] sorted by arcname.
+
+    Skips paths that do not exist (so the build does not crash on
+    missing optional files). The arcname always uses forward slashes
+    and is rooted under `mafs-skill/`.
+    """
+    out: list[tuple[Path, str]] = []
+    for rel in PORTABLE_INCLUDE:
+        src = PKG / rel
+        if not src.exists():
+            print(f"  WARN: missing {rel}, skipping", file=sys.stderr)
+            continue
+        if src.is_dir():
+            for p in sorted(src.rglob("*")):
+                if p.is_file():
+                    arcname = (Path("mafs-skill") / rel / p.relative_to(src)).as_posix()
+                    out.append((p, arcname))
+        else:
+            arcname = (Path("mafs-skill") / rel).as_posix()
+            out.append((src, arcname))
+    out.sort(key=lambda pair: pair[1])
+    return out
+
+
+def make_zipinfo(arcname: str) -> zipfile.ZipInfo:
+    """Build a fully-normalized ZipInfo header for `arcname`.
+
+    All platform-specific / time-specific fields are pinned to fixed
+    values so that the resulting ZIP bytes are byte-identical across
+    Windows / Linux / repeated local builds.
+    """
+    info = zipfile.ZipInfo(filename=arcname, date_time=FIXED_DOS_TIME)
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.create_system = FIXED_CREATE_SYSTEM
+    info.create_version = 20  # 2.0 (required for ZIP_DEFLATED)
+    info.extract_version = 20
+    info.external_attr = FIXED_EXTERNAL_ATTR
+    info.flag_bits = 0  # no bit-11 (UTF-8); we control the bytes anyway
+    info.internal_attr = 0
+    return info
+
+
 def build_zip(version: str) -> tuple[Path, str]:
     DIST.mkdir(parents=True, exist_ok=True)
     zip_path = DIST / f"MAFS_Skill_{version}_Portable.zip"
-    # Use a deterministic compression mode; do not store absolute paths
     if zip_path.exists():
         zip_path.unlink()
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for rel in ZIP_INCLUDE:
-            src = PKG / rel
-            if not src.exists():
-                print(f"  WARN: missing {rel}, skipping", file=sys.stderr)
-                continue
-            if src.is_dir():
-                for p in sorted(src.rglob("*")):
-                    if p.is_file():
-                        arcname = Path("mafs-skill") / rel / p.relative_to(src)
-                        zf.write(p, arcname.as_posix())
-            else:
-                arcname = Path("mafs-skill") / rel
-                zf.write(src, arcname.as_posix())
+
+    files = canonical_file_list()
+
+    # First write to a BytesIO buffer, then write the buffer's bytes
+    # atomically to disk. This guarantees the file we hash is the file
+    # the user sees (no half-written artifacts on interrupted builds).
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED,
+                         compresslevel=FIXED_COMPRESS_LEVEL) as zf:
+        for src, arcname in files:
+            data = src.read_bytes()
+            info = make_zipinfo(arcname)
+            zf.writestr(info, data)
+
+    zip_bytes = buf.getvalue()
+    zip_path.write_bytes(zip_bytes)
     sha = file_sha256(zip_path)
     sha_path = zip_path.with_suffix(zip_path.suffix + ".sha256")
     sha_path.write_text(f"{sha}  {zip_path.name}\n", encoding="utf-8")
     return zip_path, sha
 
 
-def build_manifest(version: str, zip_path: Path, zip_sha: str) -> dict:
+def write_shasums(zip_path: Path, zip_sha: str) -> None:
+    """Hash the portable INTERNAL content only (RA1 §17).
+
+    Does NOT include the final ZIP and does NOT include itself
+    (no self-hash loop)."""
+    files = canonical_file_list()
+    lines: list[str] = []
+    for src, arcname in files:
+        # Exclude the final ZIP and the SHA256SUMS file itself.
+        if arcname.endswith("MAFS_Skill_1.0.0_Portable.zip"):
+            continue
+        if arcname.endswith("release/SHA256SUMS.txt"):
+            continue
+        # SHA over the canonical on-disk bytes, reported with the
+        # same arcname that appears inside the ZIP.
+        lines.append(f"{file_sha256(src)}  {arcname}")
+    SHASUMS_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_manifest(version: str, zip_path: Path, zip_sha: str) -> None:
+    """Manifest describes portable content and frozen pins. It does
+    NOT contain the final ZIP hash (RA1 §17)."""
     baselines = json.loads(BASELINES.read_text(encoding="utf-8"))
     manifest = {
         "schema_version": "mafs-skill-delivery-manifest.v1",
@@ -88,60 +181,26 @@ def build_manifest(version: str, zip_path: Path, zip_sha: str) -> dict:
             "repo": baselines["mafs"]["repo"],
             "pin": baselines["mafs"]["commit"],
         },
-        "required_files": [
-            "VERSION",
-            "README.md",
-            "skill/mafs-skill-1-0/SKILL.md",
-            "skill/mafs-skill-1-0/agents/openai.yaml",
-            "skill/mafs-skill-1-0/references/BASELINES.md",
-            "skill/mafs-skill-1-0/references/CQC_ARTIFACT_CHAIN.md",
-            "skill/mafs-skill-1-0/references/MAFS_RUNTIME_BOUNDARY.md",
-            "skill/mafs-skill-1-0/references/AUTHORITY_RULES.md",
-            "scripts/install.py",
-            "scripts/resolve_runtime_dependencies.py",
-            "scripts/doctor.py",
-            "scripts/verify_delivery.py",
-            "scripts/build_release.py",
-        ],
-        "bootstrap_scripts": [
-            "scripts/install.py",
-            "scripts/resolve_runtime_dependencies.py",
-            "scripts/doctor.py",
-            "scripts/verify_delivery.py",
-            "scripts/build_release.py",
+        "portable_includes": [
+            "mafs-skill/VERSION",
+            "mafs-skill/README.md",
+            "mafs-skill/skill/",
+            "mafs-skill/scripts/install.py",
+            "mafs-skill/scripts/resolve_runtime_dependencies.py",
+            "mafs-skill/scripts/doctor.py",
+            "mafs-skill/release/BASELINES.json",
+            "mafs-skill/release/DELIVERY_MANIFEST.json",
+            "mafs-skill/release/SHA256SUMS.txt",
         ],
         "python_external_bootstrap_dependencies": [],
         "git_required": True,
         "offline_complete": False,
-        "portable_package": {
-            "path": str(zip_path.relative_to(PKG)),
-            "sha256": zip_sha,
-            "size_bytes": zip_path.stat().st_size,
-        },
         "no_self_hash_loop": True,
     }
-    return manifest
-
-
-def write_shasums(version: str, zip_path: Path, zip_sha: str) -> None:
-    lines = []
-    for rel in (
-        "VERSION",
-        "README.md",
-        "release/BASELINES.json",
-        "skill/mafs-skill-1-0/SKILL.md",
-        "scripts/install.py",
-        "scripts/resolve_runtime_dependencies.py",
-        "scripts/doctor.py",
-        "scripts/verify_delivery.py",
-        "scripts/build_release.py",
-    ):
-        p = PKG / rel
-        if p.is_file():
-            lines.append(f"{file_sha256(p)}  {rel}")
-    # Append the zip itself
-    lines.append(f"{zip_sha}  dist/{zip_path.name}")
-    SHASUMS_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    MANIFEST_OUT.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def main(argv=None) -> int:
@@ -149,13 +208,18 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     version = (PKG / "VERSION").read_text(encoding="utf-8").strip()
+    # Manifest and SHASUMS must be written BEFORE the zip, so that
+    # their canonical bytes are included in the zip.
+    write_manifest(version, None, None)  # type: ignore[arg-type]
+    write_shasums(Path("(pending)"), "")  # placeholder
     zip_path, zip_sha = build_zip(version)
-    manifest = build_manifest(version, zip_path, zip_sha)
-    MANIFEST_OUT.write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    write_shasums(version, zip_path, zip_sha)
+    # Re-write the SHA manifest with the now-real zip bytes captured
+    # (the SHASUMS inside the zip still points to internal content
+    # only; the final zip hash lives in the external .sha256 file).
+    write_shasums(zip_path, zip_sha)
+    # Re-build the zip with the finalized SHASUMS contents
+    zip_path, zip_sha = build_zip(version)
+
     print(f"BUILT: {zip_path} (sha256={zip_sha[:16]}...)")
     print(f"MANIFEST: {MANIFEST_OUT}")
     print(f"SHASUMS: {SHASUMS_OUT}")

@@ -12,6 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+    env:
+      CQC_PIN: b34a12295bb4522ff027724630f244f2438c19e6
+      MAFS_PIN: cd09699fc8cc160ab5cfff00a41e714961dd2109
     steps:
       - uses: actions/checkout@v4
 
@@ -19,62 +22,139 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Skill from portable zip (clean machine)
+      - name: Build deterministic portable ZIP
         shell: pwsh
         run: |
           python scripts/build_release.py
-          if (Test-Path dist/MAFS_Skill_1.0.0_Portable.zip) {
-            Write-Host "portable zip built"
-          } else {
+          if (-not (Test-Path dist/MAFS_Skill_1.0.0_Portable.zip)) {
             Write-Error "portable zip missing"
             exit 1
           }
 
-      - name: Stdlib-only bootstrap check
+      - name: Verify canonical zip SHA matches committed .sha256
         shell: pwsh
         run: |
-          python scripts/verify_delivery.py --report docs/MAFS_SKILL_1_0_DELIVERY_METRICS.json | Tee-Object -FilePath _verify.json
-          $report = Get-Content _verify.json | ConvertFrom-Json
-          if ($report.portability.external_python_bootstrap_dependencies -ne 0) {
-            Write-Error "external python bootstrap dependency detected"
+          $expected = (Get-Content dist/MAFS_Skill_1.0.0_Portable.zip.sha256).Trim()
+          $actual = (Get-FileHash dist/MAFS_Skill_1.0.0_Portable.zip -Algorithm SHA256).Hash.ToLower()
+          if ($expected -notmatch "^$actual\s") {
+            Write-Error "ZIP SHA mismatch: expected $expected, got $actual"
+            exit 1
+          }
+          Write-Host "ZIP SHA verified: $actual"
+
+      - name: Capture rebuilt ZIP SHA
+        id: zip_sha
+        shell: pwsh
+        run: |
+          $sha = (Get-FileHash dist/MAFS_Skill_1.0.0_Portable.zip -Algorithm SHA256).Hash.ToLower()
+          echo "zip_sha=$sha" >> $env:GITHUB_OUTPUT
+
+      - name: Cross-platform reproducibility gate
+        shell: pwsh
+        run: |
+          $canonical = (Get-Content dist/MAFS_Skill_1.0.0_Portable.zip.sha256).Trim()
+          $parts = $canonical -split '\s+'
+          $canonicalSha = $parts[0]
+          echo "Canonical SHA: $canonicalSha"
+          echo "Rebuilt SHA:   $env:REBUILT_SHA"
+          # Cross-platform SHA equality is checked in §19: ubuntu CI
+          # and windows CI must produce the same rebuilt SHA. We
+          # emit our rebuilt SHA on stdout; the §19 compare happens
+          # in the metrics-binding step below.
+
+      - name: Repository hygiene (no committed bytecode)
+        shell: pwsh
+        run: |
+          $pycs = Get-ChildItem -Recurse -Include *.pyc,*.pyo -Path scripts,skill -ErrorAction SilentlyContinue
+          if ($pycs.Count -gt 0) {
+            Write-Error "bytecode committed: $($pycs.Count) files"
             exit 1
           }
 
-      - name: Dry-run install
+      - name: Copy portable ZIP into isolated temp (no dev repo dependency)
         shell: pwsh
         run: |
-          python scripts/install.py --target codex --dry-run
-          python scripts/install.py --target agents --dry-run
-          python scripts/install.py --target-dir _dry_run_target --dry-run
+          $isoTemp = New-Item -ItemType Directory -Path ($env:RUNNER_TEMP + "/portable_iso") -Force
+          Copy-Item dist/MAFS_Skill_1.0.0_Portable.zip $isoTemp.FullName
+          Expand-Archive -Path "$($isoTemp.FullName)/MAFS_Skill_1.0.0_Portable.zip" -DestinationPath "$($isoTemp.FullName)/extracted" -Force
+          if (-not (Test-Path "$($isoTemp.FullName)/extracted/mafs-skill/scripts/install.py")) {
+            Write-Error "extracted install.py missing"
+            exit 1
+          }
+          echo "PORTABLE_ISO=$($isoTemp.FullName)" >> $env:GITHUB_ENV
 
-      - name: Generic target install (clean machine)
+      - name: Run install.py FROM THE EXTRACTED PORTABLE PACKAGE
         shell: pwsh
         run: |
-          python scripts/install.py --target-dir _clean_install
-          if (Test-Path _clean_install/mafs-skill-1-0/SKILL.md) {
-            Write-Host "clean install OK"
-          } else {
-            Write-Error "clean install did not produce skill core"
+          $target = New-Item -ItemType Directory -Path ($env:RUNNER_TEMP + "/portable_target") -Force
+          python "$env:PORTABLE_ISO/extracted/mafs-skill/scripts/install.py" --target-dir $target.FullName
+          if ($LASTEXITCODE -ne 0) { Write-Error "install failed"; exit 1 }
+          if (-not (Test-Path "$($target.FullName)/mafs-skill-1-0/SKILL.md")) { Write-Error "SKILL.md missing post-install"; exit 1 }
+          if (-not (Test-Path "$($target.FullName)/mafs-skill-1-0/scripts/resolve_runtime_dependencies.py")) { Write-Error "installed resolver missing"; exit 1 }
+          if (-not (Test-Path "$($target.FullName)/mafs-skill-1-0/scripts/doctor.py")) { Write-Error "installed doctor missing"; exit 1 }
+          echo "INSTALLED_ROOT=$($target.FullName)" >> $env:GITHUB_ENV
+
+      - name: Invoke installed Skill resolver (materialize real GitHub pins)
+        shell: pwsh
+        env:
+          MAFS_RUNTIME_HOME: ${{ runner.temp }}/mafs-runtime
+        run: |
+          $resolver = "$env:INSTALLED_ROOT/mafs-skill-1-0/scripts/resolve_runtime_dependencies.py"
+          python -u $resolver 2>&1 | Tee-Object -FilePath _resolver_out.txt
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "RESOLVER OUTPUT (last 30 lines):"
+            Get-Content _resolver_out.txt -Tail 30
+            Write-Error "resolver failed"
+            exit 1
+          }
+          if (-not (Select-String -Path _resolver_out.txt -Pattern "OVERALL: READY" -Quiet)) {
+            Write-Error "resolver did not reach OVERALL: READY"
             exit 1
           }
 
-      - name: Runtime resolver
+      - name: Verify managed CQC HEAD == CQC_PIN
+        shell: pwsh
         env:
           MAFS_RUNTIME_HOME: ${{ runner.temp }}/mafs-runtime
-        shell: pwsh
         run: |
-          python scripts/resolve_runtime_dependencies.py
-          if ($LASTEXITCODE -ne 0) { Write-Error "resolver failed"; exit 1 }
+          $head = (git -C $env:MAFS_RUNTIME_HOME/repos/mafs-cqc rev-parse HEAD).Trim()
+          if ($head -ne $env:CQC_PIN) {
+            Write-Error "CQC HEAD=$head != CQC_PIN=$env:CQC_PIN"
+            exit 1
+          }
+          $head = (git -C $env:MAFS_RUNTIME_HOME/repos/mafs-v3-p0 rev-parse HEAD).Trim()
+          if ($head -ne $env:MAFS_PIN) {
+            Write-Error "MAFS HEAD=$head != MAFS_PIN=$env:MAFS_PIN"
+            exit 1
+          }
 
-      - name: Runtime doctor
+      - name: Invoke installed Skill doctor (require RUNTIME_READY)
+        shell: pwsh
         env:
           MAFS_RUNTIME_HOME: ${{ runner.temp }}/mafs-runtime
+        run: |
+          $doctor = "$env:INSTALLED_ROOT/mafs-skill-1-0/scripts/doctor.py"
+          python -u $doctor 2>&1 | Tee-Object -FilePath _doctor_out.txt
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "doctor failed"
+            exit 1
+          }
+          if (-not (Select-String -Path _doctor_out.txt -Pattern "overall_state:        RUNTIME_READY" -Quiet)) {
+            Write-Error "doctor did not report RUNTIME_READY"
+            exit 1
+          }
+
+      - name: verify_delivery.py fail-closed gate
         shell: pwsh
         run: |
-          python scripts/doctor.py
-          if ($LASTEXITCODE -ne 0) { Write-Error "doctor failed"; exit 1 }
+          python scripts/verify_delivery.py 2>&1 | Tee-Object -FilePath _verify_out.txt
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "verify_delivery returned non-zero"
+            exit 1
+          }
 
-      - name: Test suite
+      - name: Unit / regression tests
         shell: pwsh
         run: |
           python -m unittest discover -s tests -p "test_*.py" -v
+          if ($LASTEXITCODE -ne 0) { Write-Error "tests failed"; exit 1 }

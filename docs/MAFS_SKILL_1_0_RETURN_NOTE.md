@@ -1,6 +1,17 @@
 # MAFS Skill 1.0 — §39 Return Note
 
-contract: MAFS-SKILL-1.0-PORTABLE-DELIVERY-RUNTIME-BOOTSTRAP-v0.1
+> **STATUS: SUPERSEDED_BY_DELIVERY_RA1**
+>
+> This v0 return note is preserved as a governance audit trail only.
+> The canonical current acceptance truth is in the RA1 documents:
+> - `docs/MAFS_SKILL_1_0_DELIVERY_RA1_SUMMARY.md`
+> - `docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json`
+>
+> Supersession marker: `SUPERSEDED_BY_DELIVERY_RA1`
+> Supersession contract: `MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1`
+
+contract: MAFS-SKILL-1.0-PORTABLE-DELIVERY-RUNTIME-BOOTSTRAP-v0.1 (SUPERSEDED)
+supersession: MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1
 executed_by: Local Claw (Mavis)
 execution_date: 2026-09-02
 

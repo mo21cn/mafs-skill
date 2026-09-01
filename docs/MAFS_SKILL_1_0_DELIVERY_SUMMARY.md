@@ -1,6 +1,25 @@
 # MAFS Skill 1.0 — Delivery Summary
 
-contract: MAFS-SKILL-1.0-PORTABLE-DELIVERY-RUNTIME-BOOTSTRAP-v0.1
+> **STATUS: SUPERSEDED_BY_DELIVERY_RA1**
+>
+> This document is the original v0 delivery summary. The first
+> delivery candidate was merged to main before HO+ChatGPT
+> acceptance; the canonical current acceptance truth is now:
+>
+> - `docs/MAFS_SKILL_1_0_DELIVERY_RA1_SUMMARY.md`
+> - `docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json`
+>
+> This v0 file is preserved as a governance audit trail only.
+> Per RA1 contract §24, no v0 field is canonical current truth.
+> Per RA1 contract §2, the premature merge is a
+> `RECORDED_GOVERNANCE_DEVIATION`; it does not establish an
+> authorization precedent.
+>
+> Supersession marker: `SUPERSEDED_BY_DELIVERY_RA1`
+> Supersession contract: `MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1`
+
+contract: MAFS-SKILL-1.0-PORTABLE-DELIVERY-RUNTIME-BOOTSTRAP-v0.1 (SUPERSEDED)
+supersession: MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1
 deliverer: Local Claw (Mavis)
 delivery_date: 2026-09-02
 repository: mo21cn/mafs-skill

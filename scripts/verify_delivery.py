@@ -1,39 +1,37 @@
 #!/usr/bin/env python
-"""MAFS Skill 1.0 — delivery acceptance checker (contract §38).
+"""MAFS Skill 1.0 — fail-closed delivery acceptance gate (RA1 §21).
 
-Reads the acceptance standard's required booleans and emits a single
-machine-readable verdict. Does NOT execute scientific code; does NOT
-mutate the installed Skill. Stdlib only.
+This script does NOT claim PASS for anything it cannot mechanically
+verify. Where evidence is absent, it emits `NOT_EVALUATED`. It returns
+non-zero exit when any REQUIRED acceptance field is false or not
+evaluated.
 
-Run after:
+Required machine evidence:
+  - docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json
+  - dist/MAFS_Skill_1.0.0_Portable.zip (must exist)
+  - dist/MAFS_Skill_1.0.0_Portable.zip.sha256 (must match the file)
 
-    python scripts/build_release.py          # produces dist/MAFS_Skill_1.0.0_Portable.zip
-    python scripts/install.py --target-dir /tmp/check_skill
-    python scripts/resolve_runtime_dependencies.py
-    python scripts/doctor.py
+Plus structural checks it can perform locally.
 
-to populate the corresponding fields.
-
-Usage:
-    python scripts/verify_delivery.py --report path/to/MAFS_SKILL_1_0_DELIVERY_METRICS.json
-    python scripts/verify_delivery.py --interactive
+It does NOT call git, NOT hit the network, NOT verify CQC / MAFS
+integrity directly. It only reads the metrics file and the local
+package artifacts and emits a verdict.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
-import os
 import re
 import sys
 import zipfile
 from pathlib import Path
 
 PKG = Path(__file__).resolve().parents[1]
-BASELINES = PKG / "release" / "BASELINES.json"
+METRICS = PKG / "docs" / "MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json"
 DIST = PKG / "dist"
-RELEASE = PKG / "release" / "DELIVERY_MANIFEST.json"
-METRICS_FILE = PKG / "docs" / "MAFS_SKILL_1_0_DELIVERY_METRICS.json"
+SHASUMS_INTERNAL = PKG / "release" / "SHA256SUMS.txt"
+MANIFEST = PKG / "release" / "DELIVERY_MANIFEST.json"
 
 
 def file_sha256(p: Path) -> str:
@@ -42,157 +40,191 @@ def file_sha256(p: Path) -> str:
     return h.hexdigest()
 
 
-def check_no_vendor() -> bool:
-    """No CQC/MAFS source vendored into the package (contract §2)."""
-    forbid = (PKG / "cqc", PKG / "mafs", PKG / "vendor")
-    for d in forbid:
-        if d.exists():
-            return False
-    return True
-
-
-def check_no_submodule() -> bool:
-    gits = list(PKG.glob("**/.gitmodules"))
-    return len(gits) == 0
-
-
-def check_no_external_dep_in_scripts() -> bool:
-    """Bootstrap scripts must use Python standard library only.
-
-    Only matches actual statements (lines starting with `import` or
-    `from`); comments and docstrings that mention a forbidden name are
-    not violations.
-    """
-    forbid = ("yaml", "requests", "pydantic", "gitpython", "urllib3")
-    for py in (PKG / "scripts").glob("*.py"):
-        text = py.read_text(encoding="utf-8")
-        for line in text.splitlines():
-            stripped = line.lstrip()
-            if stripped.startswith("#"):
-                continue
-            for f in forbid:
-                if re.match(rf"^(import|from)\s+{f}(\b|$)", stripped, re.IGNORECASE):
-                    return False
-    return True
-
-
-def check_skill_core_files() -> bool:
-    core = PKG / "skill" / "mafs-skill-1-0"
-    for rel in (
-        "SKILL.md",
-        "agents/openai.yaml",
-        "references/BASELINES.md",
-        "references/CQC_ARTIFACT_CHAIN.md",
-        "references/MAFS_RUNTIME_BOUNDARY.md",
-        "references/AUTHORITY_RULES.md",
-    ):
-        if not (core / rel).is_file():
-            return False
-    return True
-
-
-def check_no_codex_path_in_core() -> bool:
-    """Core SKILL.md must not bake in a Codex-specific path."""
-    core = PKG / "skill" / "mafs-skill-1-0" / "SKILL.md"
-    text = core.read_text(encoding="utf-8")
-    # A Codex-specific path string would force coupling. The Skill
-    # core talks about "Codex" as a *consumer* but never prescribes
-    # `C:\Users\...\.codex\skills` as the only install location.
-    return "\\.codex\\skills" not in text and "/.codex/skills" not in text
-
-
-def build_report() -> dict:
-    baselines = json.loads(BASELINES.read_text(encoding="utf-8"))
-    version = (PKG / "VERSION").read_text(encoding="utf-8").strip()
+def derive_local() -> dict:
+    """Derive what we can from the local package alone. Anything we
+    cannot verify is reported as NOT_EVALUATED."""
+    version = "1.0.0"
     zip_path = DIST / f"MAFS_Skill_{version}_Portable.zip"
-    portable_exists = zip_path.is_file()
-    portable_sha = file_sha256(zip_path) if portable_exists else ""
+    sha256_path = DIST / f"MAFS_Skill_{version}_Portable.zip.sha256"
 
-    return {
-        "schema_version": "mafs-skill-delivery-acceptance.v1",
-        "package": {
-            "versioned_portable_package_exists": portable_exists,
-            "canonical_skill_core_present": check_skill_core_files(),
-            "release_manifest_present": RELEASE.is_file(),
-            "sha_truth_valid": bool(portable_sha),
-        },
-        "installation": {
-            "codex_install_supported": True,
-            "agents_install_supported": True,
-            "explicit_target_dir_supported": True,
-        },
-        "runtime_bootstrap": {
-            "preexisting_repos_not_required": True,
-            "cqc_exact_pin_materializable": baselines["cqc"]["commit"] != "",
-            "mafs_exact_pin_materializable": baselines["mafs"]["commit"] != "",
-            "existing_user_repo_not_mutated": True,
-            "exact_sha_verification_enforced": True,
-            "missing_repo_not_misclassified_as_baseline_mismatch": True,
-            "network_failure_honest": True,
-        },
-        "portability": {
-            "clean_machine_simulation_passed": False,  # populated by test run
-            "windows_ci_passed": False,
-            "linux_ci_passed": False,
-            "external_python_bootstrap_dependencies": (
-                0 if check_no_external_dep_in_scripts() else -1
-            ),
-        },
-        "authority": {
-            "cqc_mafs_independence_preserved": True,
-            "path_c_preserved": True,
-            "no_vendor_copy": check_no_vendor(),
-            "no_submodule": check_no_submodule(),
-            "no_repo_merge": True,
-            "no_semantic_change": True,
-            "no_auto_candidate_selection": True,
-        },
-        "delivery_truth": {
-            "installation_gate_passed": False,  # populated by test run
-            "runtime_readiness_gate_passed": False,
-            "workflow_readiness_smoke_passed": False,
-            "live_scientific_search_not_used_for_acceptance": True,
-        },
-        "production": {
-            "cqc_repository_modified": False,
-            "mafs_repository_modified": False,
-        },
+    out: dict = {
+        "product": "MAFS Skill 1.0",
+        "version": version,
+        "cqc_pin": "b34a12295bb4522ff027724630f244f2438c19e6",
+        "mafs_pin": "cd09699fc8cc160ab5cfff00a41e714961dd2109",
+        "portable_zip_built": zip_path.is_file(),
+        "portable_zip_sha256": "",
+        "portable_zip_size_bytes": 0,
+        "portable_zip_internal_manifest_present": False,
+        "portable_zip_internal_shasums_present": False,
+        "external_zip_sha256_present": sha256_path.is_file(),
+        "external_zip_sha256_matches": False,
     }
 
+    if zip_path.is_file():
+        out["portable_zip_sha256"] = file_sha256(zip_path)
+        out["portable_zip_size_bytes"] = zip_path.stat().st_size
+        with zipfile.ZipFile(zip_path) as zf:
+            names = set(zf.namelist())
+        out["portable_zip_internal_manifest_present"] = (
+            "mafs-skill/release/DELIVERY_MANIFEST.json" in names
+        )
+        out["portable_zip_internal_shasums_present"] = (
+            "mafs-skill/release/SHA256SUMS.txt" in names
+        )
 
-def merge_metrics(report: dict, metrics: dict) -> dict:
-    """Overlay the deliverer's recorded metrics on top of the auto-
-    detected fields. The deliverer is the only authority for the
-    `_passed` flags; we never silently auto-promote them."""
-    for k in (
-        "clean_machine_simulation_passed",
-        "windows_ci_passed",
-        "linux_ci_passed",
-    ):
-        report["portability"][k] = bool(metrics.get(k, False))
-    for k in (
-        "installation_gate_passed",
-        "runtime_readiness_gate_passed",
-        "workflow_readiness_smoke_passed",
-    ):
-        report["delivery_truth"][k] = bool(metrics.get(k, False))
-    return report
+    if out["external_zip_sha256_present"] and out["portable_zip_built"]:
+        text = sha256_path.read_text(encoding="utf-8").strip()
+        m = re.match(r"^([a-f0-9]{64})\s", text)
+        if m:
+            out["external_zip_sha256_matches"] = m.group(1) == out["portable_zip_sha256"]
+
+    return out
+
+
+def load_metrics() -> dict:
+    if not METRICS.is_file():
+        return {
+            "_missing": True,
+            "error": f"metrics file not present: {METRICS}",
+        }
+    return json.loads(METRICS.read_text(encoding="utf-8"))
+
+
+def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
+    """Return (exit_code, verdict).
+
+    The verdict includes:
+      - `derived_*` from the local package
+      - `metrics_*` from RA1 metrics file
+      - `not_evaluated` list of fields the deliverer did not provide
+      - `failing` list of REQUIRED fields that are false
+      - `passing` list of REQUIRED fields that are true
+    """
+    verdict: dict = {
+        "schema_version": "mafs-skill-delivery-verify.v1",
+        "derived": derived,
+        "metrics": {} if metrics.get("_missing") else metrics,
+        "not_evaluated": [],
+        "failing": [],
+        "passing": [],
+    }
+
+    # Required local (derivable) fields
+    required_derivable = [
+        ("portable_zip_built", derived["portable_zip_built"]),
+        ("portable_zip_internal_manifest_present",
+         derived["portable_zip_internal_manifest_present"]),
+        ("portable_zip_internal_shasums_present",
+         derived["portable_zip_internal_shasums_present"]),
+        ("external_zip_sha256_present", derived["external_zip_sha256_present"]),
+        ("external_zip_sha256_matches", derived["external_zip_sha256_matches"]),
+    ]
+    for name, ok in required_derivable:
+        if ok:
+            verdict["passing"].append(name)
+        else:
+            verdict["failing"].append(name)
+
+    # Required metrics fields (from RA1 §22 machine-truth model)
+    if metrics.get("_missing"):
+        verdict["not_evaluated"].append("metrics_file")
+    else:
+        # Each REQUIRED field from §22 must be present and either true
+        # or a known not-evaluated marker.
+        # Polarity note: most fields are "this happened" (true = pass).
+        # A handful are "this was avoided" (false = pass): a true value
+        # for those means we broke a contract invariant.
+        positive_metrics = [
+            "installed_skill_self_contained",
+            "portable_only_install_pass",
+            "installed_resolver_invoked",
+            "installed_doctor_invoked",
+            "runtime_ready_pass",
+            "managed_runtime_only",
+            "user_override_never_executable",
+            "resolver_doctor_truth_consistent",
+            "wrong_repo_no_mutation_pass",
+            "tracked_runtime_dirty_detection_pass",
+            "portable_zip_built",
+            "reproducible_build_local_pass",
+            "cross_platform_zip_sha_equal",
+            "codex_install_layout_pass",
+            "governance_deviation_recorded",
+        ]
+        negative_metrics = [
+            # The Skill MUST NOT have modified upstream production
+            # repos. true => we modified production => contract violation.
+            "cqc_production_modified",
+            "mafs_production_modified",
+            "live_scientific_search_executed",
+        ]
+        for name in positive_metrics:
+            if name not in metrics:
+                verdict["not_evaluated"].append(name)
+                continue
+            v = metrics[name]
+            if v is True:
+                verdict["passing"].append(name)
+            elif v is False:
+                verdict["failing"].append(name)
+            else:
+                if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
+                    verdict["not_evaluated"].append(name)
+                else:
+                    verdict["failing"].append(name)
+        for name in negative_metrics:
+            if name not in metrics:
+                verdict["not_evaluated"].append(name)
+                continue
+            v = metrics[name]
+            if v is False:
+                verdict["passing"].append(name)
+            elif v is True:
+                verdict["failing"].append(name)
+            else:
+                if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
+                    verdict["not_evaluated"].append(name)
+                else:
+                    verdict["failing"].append(name)
+
+        # codex_discovery_smoke_status must be NOT_EVALUATED_BY_CI or true
+        dsm = metrics.get("codex_discovery_smoke_status")
+        if dsm == "NOT_EVALUATED_BY_CI":
+            verdict["passing"].append("codex_discovery_smoke_status")
+        elif dsm is True:
+            verdict["passing"].append("codex_discovery_smoke_status")
+        else:
+            verdict["failing"].append("codex_discovery_smoke_status")
+
+    # Exit code: 0 only if all REQUIRED derivable fields pass AND no
+    # REQUIRED metrics field is unevaluated or failing.
+    if verdict["failing"] or verdict["not_evaluated"]:
+        return 1, verdict
+    return 0, verdict
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--report", default=str(METRICS_FILE),
-                    help="path to MAFS_SKILL_1_0_DELIVERY_METRICS.json")
+    ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
 
-    report = build_report()
-    metrics_path = Path(args.report)
-    if metrics_path.is_file():
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
-        report = merge_metrics(report, metrics)
+    derived = derive_local()
+    metrics = load_metrics()
+    rc, verdict = evaluate(derived, metrics)
 
-    print(json.dumps(report, indent=2, ensure_ascii=False))
-    return 0
+    if args.json:
+        print(json.dumps(verdict, indent=2, ensure_ascii=False))
+    else:
+        for k in ("passing", "failing", "not_evaluated"):
+            print(f"--- {k} ---")
+            for f in verdict[k]:
+                print(f"  {f}")
+        if rc == 0:
+            print("VERDICT: PASS")
+        else:
+            print("VERDICT: FAIL")
+    return rc
 
 
 if __name__ == "__main__":
