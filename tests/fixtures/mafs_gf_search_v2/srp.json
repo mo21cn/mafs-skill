@@ -1,0 +1,124 @@
+{
+  "artifact_id": "SRP-GF-EM-A",
+  "schema_version": "0.1",
+  "source_cqs_id": "CQS-CQC-P0-A",
+  "source_cqs_sha256": "454e3e8944be6c1f1d7ca875cbe19a3bb9d2a768209043849fef5507ac157e7f",
+  "source_narrative_sha256": "35f47188c87e80086e3d355c682b71a39493dbed63690f2f284eafe6e4112c92",
+  "source_narrative": "# Narrative A — GF / EM identity-lineage task (real replay domain: mafs-v3-p0 Replay B)\n\n## Task origin\n\nThis narrative comes from a real operator task in the MAFS v3.0 Replay B benchmark line. The verbatim operator request is:\n\n请调整 MAFS 搜索：von Reyn et al. 2014/2020 等论文补充材料里的 GF 神经元 ID 清单。",
+  "requirements": [
+    {
+      "requirement_id": "R01",
+      "target_question_ids": [
+        "CQ-01"
+      ],
+      "evidence_need": "Confirm whether the supplementary-material content of von Reyn et al. 2014 (Nature Neuroscience 17:962-970, DOI 10.1038/nn.3741) contains a modern EM neuron-ID list for the Giant Fiber, and if so which neurons it covers.",
+      "epistemic_routes": [
+        {
+          "route_id": "paper_identity_crossref",
+          "purpose": "Recover the von Reyn 2014 paper identity (DOI/PMID/title) so it can be located and its source content inspected.",
+          "status": "REQUIRED",
+          "condition": "Paper identity must be recovered by the scholarly stack before source content can be assessed."
+        },
+        {
+          "route_id": "source_content_adapter",
+          "purpose": "Access the von Reyn 2014 full text / supplementary materials to determine whether a GF neuron-ID table exists.",
+          "status": "CONDITIONAL",
+          "condition": "Held: the production MAFS v3.0 scholarly stack (Crossref + pubmed_ebsco compiler) does not include a full-text/supplementary-material adapter; the route is only activatable if such an adapter is granted."
+        }
+      ],
+      "source_requirements": [
+        "von Reyn et al. 2014 supplementary material / full text",
+        "Crossref metadata for 10.1038/nn.3741"
+      ],
+      "stopping_condition": "Stopping condition satisfied when the source-content status is one of: contains a GF neuron-ID table (list coverage), confirmed absent, or SOURCE_CONTENT_NOT_ACCESSIBLE.",
+      "uncertainty_binding": "Source content accessibility is unknown; a not-accessible result must be distinguished from a confirmed-absent result."
+    },
+    {
+      "requirement_id": "R02",
+      "target_question_ids": [
+        "CQ-02"
+      ],
+      "evidence_need": "Establish whether a 'von Reyn 2020 GF paper' exists in the bibliographic record, or whether the 2020 citation is a conflation with Scheffer et al. 2020 (hemibrain connectome).",
+      "epistemic_routes": [
+        {
+          "route_id": "negative_branch_search",
+          "purpose": "Run a bounded negative-branch Crossref search for 'von Reyn' + 2020 + Drosophila / giant fiber and record whether any canonical candidate surfaces.",
+          "status": "REQUIRED",
+          "condition": "The negative-branch result must be recorded; absence must not be over-claimed as strong non-existence evidence unless positive recall is adequate."
+        }
+      ],
+      "source_requirements": [
+        "bibliographic record for a von Reyn 2020 GF/EM publication",
+        "Scheffer et al. 2020 canonical identity (DOI 10.7554/eLife.57443)"
+      ],
+      "stopping_condition": "Stopping condition satisfied when the negative-branch status is one of NOT_FOUND_WITH_ADEQUATE_SEARCH, LIKELY_CONFLATION, or COVERAGE_INSUFFICIENT.",
+      "uncertainty_binding": "The current scientific reading is 'likely conflation'; the negative-branch search must not fabricate a citation to force a positive result."
+    },
+    {
+      "requirement_id": "R03",
+      "target_question_ids": [
+        "CQ-03"
+      ],
+      "evidence_need": "Establish the verified relation GF = Giant Fiber = DNp01 from an authoritative primary source (Namiki et al. 2018 and Virtual Fly Brain FBbt:00004020).",
+      "epistemic_routes": [
+        {
+          "route_id": "nomenclature_primary_source",
+          "purpose": "Recover the Namiki et al. 2018 paper and record the DNp01 nomenclature; cross-reference VFB / Monarch records.",
+          "status": "REQUIRED",
+          "condition": "The nomenclature proposition is recorded; where the production stack does not reproduce the proposition, the status is ORACLE_VERIFIED_BUT_NOT_REPRODUCED_BY_PRODUCTION_STACK."
+        }
+      ],
+      "source_requirements": [
+        "Namiki et al. 2018 eLife 7:e34272",
+        "Virtual Fly Brain FBbt:00004020",
+        "Monarch Initiative FBbt:00004020"
+      ],
+      "stopping_condition": "Stopping condition satisfied when the GF == Giant Fiber == DNp01 mapping is verified (or the non-reproduction status is recorded).",
+      "uncertainty_binding": "The DNg01 label is a separate open question (CQ-04) and must not be silently folded into this verified mapping."
+    },
+    {
+      "requirement_id": "R04",
+      "target_question_ids": [
+        "CQ-04"
+      ],
+      "evidence_need": "Determine whether the historical label DNg01 is the same neuron class as GF / Giant Fiber / DNp01, based on authoritative primary sources.",
+      "epistemic_routes": [
+        {
+          "route_id": "historical_lineage_check",
+          "purpose": "Look for any authoritative primary source that establishes or refutes a DNg01 == DNp01 synonymy.",
+          "status": "REQUIRED",
+          "condition": "Absent authoritative evidence of synonymy, DNg01 is treated as a DISTINCT neuron class (UNRESOLVED disposition)."
+        }
+      ],
+      "source_requirements": [
+        "FlyBase reference reports",
+        "Virtual Fly Brain terms",
+        "original literature naming for DNg01"
+      ],
+      "stopping_condition": "Stopping condition satisfied when a DNg01 relation is either established or recorded as UNRESOLVED / DISTINCT_NEURON_CLASS_UNLESS_AUTHORITATIVE_EVIDENCE.",
+      "uncertainty_binding": "The question may flip with new primary-source evidence; the current state is UNRESOLVED."
+    },
+    {
+      "requirement_id": "R05",
+      "target_question_ids": [
+        "CQ-05"
+      ],
+      "evidence_need": "Resolve the Giant Fiber (DNp01) body root IDs in the FlyWire v783 and hemibrain v1.2.1 datasets.",
+      "epistemic_routes": [
+        {
+          "route_id": "dataset_entity_adapter",
+          "purpose": "Query the FlyWire / VFB / hemibrain dataset annotations for the DNp01 left/right body IDs.",
+          "status": "CONDITIONAL",
+          "condition": "Held: the production MAFS v3.0 scholarly stack has no FlyWire / VFB / hemibrain dataset adapter. The route is only activatable if a dataset adapter is explicitly granted. Until then the question legitimately terminates as ENTITY_RESOLUTION_REQUIRED."
+        }
+      ],
+      "source_requirements": [
+        "FlyWire v783 / annotation v2.1.0 records",
+        "hemibrain v1.2.1 neuPrint records",
+        "fafbseg-py / hemibrainr documentation"
+      ],
+      "stopping_condition": "Stopping condition satisfied when the entity IDs are either verified against dataset annotations or recorded as ENTITY_RESOLUTION_REQUIRED (HISTORICAL_ENTITY_ANCHOR_UNVERIFIED).",
+      "uncertainty_binding": "The operator-supplied root IDs are unverified against dataset annotations; root IDs may shift across dataset releases (v783 / FAFB14.1 / annotation v2.1.0)."
+    }
+  ]
+}

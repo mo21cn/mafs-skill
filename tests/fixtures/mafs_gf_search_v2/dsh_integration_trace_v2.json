@@ -1,0 +1,102 @@
+{
+  "schema_version": "dsh-integration-trace.v2",
+  "task_id": "mafs-gf-em-2026-09-03-v2",
+  "task_prompt_snippet": "调用 MAFS Skill 1.0 进行搜索任务：von Reyn et al. 2014/2020 等论文补充材料里的 GF 神经元 ID 清单",
+  "phase_2_hardened_skill_zip_sha256": "a0c1cc6cef0947bdd1f4719f7d4ebb9252236c9f71cb544cd8c9b6b6fba4ca7f",
+  "step_count": 7,
+  "approval_total": 0,
+  "approval_allow_once": 0,
+  "approval_deny": 0,
+  "approval_category_counts": {},
+  "stop_checkpoint_observed": true,
+  "selected_candidate_ids": [
+    "Q1",
+    "Q2",
+    "Q4"
+  ],
+  "explicit_selection_mechanism": "Mavis-as-replay-driver iterated over (Q1, Q2, Q4) per the same explicit selection as v1; this is NOT auto-select",
+  "final_question_states": {
+    "Q1": "RESOLVED",
+    "Q2": "RESOLVED",
+    "Q4": "RESOLVED",
+    "Q5": "ENTITY_RESOLUTION_REQUIRED",
+    "Q3": "NO_CANONICAL_CANDIDATE"
+  },
+  "final_question_state_authority": {
+    "Q1": "CrossrefReferenceResolver (DOI 10.1038/nn.3741)",
+    "Q2": "CrossrefReferenceResolver (DOI 10.7554/elife.34272)",
+    "Q4": "CrossrefReferenceResolver (DOI 10.7554/elife.57443)",
+    "Q5": "Out-of-scope for MAFS scholarly stack; ENTITY_RESOLUTION_REQUIRED per admission",
+    "Q3": "no candidate under bounded search; LIKELY_CONFLATION inferred vs. Scheffer 2020 (DOI 10.7554/eLife.57443)"
+  },
+  "resolver_provenance_completeness": {
+    "Q1": "evidence_id='CE-9239dce9440bd171' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-002' (preserved per §3.A)",
+    "Q2": "evidence_id='CE-d8ecaa90a91b0848' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-004' (preserved per §3.A)",
+    "Q4": "evidence_id='CE-8039b383cd3ed53d' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-006' (preserved per §3.A)",
+    "Q3": "N/A (no candidate)",
+    "Q5": "N/A (entity-boundary short-circuit)"
+  },
+  "report_negative_evidence_authority": {
+    "Q3_handling": "REPORT.md §2 uses the bounded language: 'no canonical candidate recovered under the bounded search; the current evidence supports likely conflation with Scheffer et al. 2020'. report_validation.py confirms 0 forbidden overclaim hits. Per advisory §2.2 / §3.C, bounded-search absence is preserved."
+  },
+  "planning_lineage_presence": {
+    "mafs_planning_artifact": "REFERENCED (lineage_glue.md contract introduced in Phase 2; this v2 run does not emit a separate mafs_planning.json because the model-authored Axis/SearchOrder is encoded inline in run_mafs_gf.py's _search_orders() function; the contract allows inline encoding for narrative-driven runs)",
+    "integration_binding_mafs_axis_id": "null (Phase 1 audit finding; not modified by Phase 2 because the integration_binding schema is owned by the CQC frozen pin)"
+  },
+  "artifact_hashes": {
+    "cqs.json": {
+      "sha256": "454e3e8944be6c1f1d7ca875cbe19a3bb9d2a768209043849fef5507ac157e7f",
+      "bytes": 7333
+    },
+    "srp.json": {
+      "sha256": "cf87b6876485a13d228af8b4158938c4c9bde4b1ef5dbb10d448a2c3ac54148a",
+      "bytes": 7527
+    },
+    "budget_envelope.json": {
+      "sha256": "46e2f57a1d49b33262af7383d2dc93c8f9893d10004da9e30a827d0415c6c64f",
+      "bytes": 3268
+    },
+    "integration_binding.json": {
+      "sha256": "c81af8ae964ccc454410c932b8603b0e98802407df13460e3fbf95d16a1c09ca",
+      "bytes": 1956
+    },
+    "discovery_candidate_pointers.json": {
+      "sha256": "8bf5306faec60031b38463bacbdb84b6e85a27cc9bdd83cbf8ead72125702775",
+      "bytes": 49940
+    },
+    "resolved_canonical_evidence.json": {
+      "sha256": "00770b0daaaaaeb99aabc5bfa7517bbe91fa10777aed5fd141ce2086e0840dc5",
+      "bytes": 4553
+    },
+    "REPORT.md": {
+      "sha256": "0b584dd293155cfdaa835b3e808111b5f47ea7dd1140d56a46030a7ac69913db",
+      "bytes": 6394
+    }
+  },
+  "v1_to_v2_semantic_state_comparison": {
+    "Q1": "v1: RESOLVED, evidence_id=CE-deadbeef...001 (placeholder from v1 test), resolver_invocation_id=RIVR-001; v2: RESOLVED, evidence_id=CE-9239dce9440bd171 (real, derived from canonical DOI+title), resolver_invocation_id=RIVR-002",
+    "Q2": "v1: RESOLVED, evidence_id='' (empty due to v1 driver bug), resolver_invocation_id=RIVR-002 (only one preserved due to manual retry); v2: RESOLVED, evidence_id=CE-d8ecaa90a91b0848 (real), resolver_invocation_id=RIVR-004 (preserved by patch_one_q)",
+    "Q3": "v1: implicit (no entry in resolved_canonical_evidence.json); v2: explicit NO_CANONICAL_CANDIDATE per advisory §2.5 correction A",
+    "Q4": "v1: RESOLVED, evidence_id=CE-deadbeef...004 (placeholder), resolver_invocation_id=RIVR-004; v2: RESOLVED, evidence_id=CE-8039b383cd3ed53d (real), resolver_invocation_id=RIVR-006",
+    "Q5": "v1: ENTITY_RESOLUTION_REQUIRED (preserved); v2: ENTITY_RESOLUTION_REQUIRED (preserved)",
+    "Q_final_states_match": true,
+    "provenance_completeness_improved": true
+  },
+  "DSH_replay_notes": {
+    "DSH_skill_install_path": "C:\\Users\\Administrator\\AppData\\Roaming\\dsh-desktop\\harness\\skills\\mafs-skill-1-0",
+    "DSH_install_succeeded": true,
+    "DSH_install_method": "install.py --target dsh (Phase 2 hardened; new SHA a0c1cc6c...)",
+    "DSH_old_install_removed": true,
+    "DSH_daemon_restart_required": "NOT manually triggered; DSH watcher hot-reloads skill files (per v1 session observation). The skill files were already in place before any DSH call; no DSH call was made in this v2 replay (Mavis-as-replay-driver invoked the skill directly).",
+    "approval_count_delta": "v1 DSH session: 10 approvals (all allowed-once, 0 deny). v2 Mavis-direct replay: 0 approvals (no DSH confined sandbox; no ask_user_question prompts). Per advisory §5, approval count is NOT a hard acceptance gate; deserved security/authority checkpoints are preserved. The v2 replay demonstrates the underlying skill behavior is correct; the harness-level approval friction is a separate concern that would only matter in a real DSH session."
+  },
+  "ci_run_id_for_phase_2": "33659464515 (M2.G source change) + 33660057944 (M2.H docs-only)",
+  "ci_run_id_for_phase_3": "(this is the Phase 3 replay; no separate CI run; the Phase 2 CI gates already cover the deployed build)",
+  "main_HEAD_unmodified": "16ac1eb2f9d7dc7d0c86d77cb7e96f928df6dfd0",
+  "branch_HEAD_at_replay": "de29a304e6465eae1f74151b05719d2b9c1a8645 (dev/1.0-runtime-hardening)",
+  "notes": [
+    "v2 replay is Mavis-direct (no DSH confined sandbox) because the Mavis session cannot directly invoke a DSH agent. The replay exercises the same skill code paths (resolver, doctor, MAFS discover, MAFS resolve) that a DSH agent would invoke; the harness-level approval friction is harness-specific, not skill-specific.",
+    "v1 evidence_id values (CE-deadbeef...001, etc.) are placeholders from a test fixture, not the actual v1 run output. v2 evidence_id values are real, derived from canonical DOI + title per advisory §2.1.",
+    "Q3 was implicit in v1 (no entry in resolved_canonical_evidence.json). v2 makes Q3 explicit per advisory §2.5 correction A. The bounded language treatment is preserved in v2 REPORT.md and validated by the fail-closed report_validation.py."
+  ]
+}

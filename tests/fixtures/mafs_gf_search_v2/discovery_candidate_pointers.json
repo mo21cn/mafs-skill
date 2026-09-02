@@ -1,0 +1,1295 @@
+{
+  "Q1": {
+    "search_order_id": "SO-Q1-vonReyn-2014",
+    "compiled_query": "\"von Reyn\" AND \"giant fiber\" AND \"Drosophila\"",
+    "expected_doi": "10.1038/nn.3741",
+    "expected_pmid": "24908103",
+    "ladder_rungs": [
+      {
+        "rendering_path": "A_author_year_bibliographic",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-002",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1038/nn.3741",
+            "title_hint": "A spike-timing mechanism for action selection",
+            "identifier_hints": {
+              "doi": "10.1038/nn.3741",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-007"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-003",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.21236/ada605312",
+            "title_hint": "Towards Interactive Timing Analysis for Designing Reactive Systems",
+            "identifier_hints": {
+              "doi": "10.21236/ada605312",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-007"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-004",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.bbi.2014.06.026",
+            "title_hint": "6. Adaptive reproduction: How timing of psychosocial stimulus affects birth outcome",
+            "identifier_hints": {
+              "doi": "10.1016/j.bbi.2014.06.026",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-007"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-005",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1111/jedm.12044",
+            "title_hint": "Improving the Bandwidth Selection in Kernel Equating",
+            "identifier_hints": {
+              "doi": "10.1111/jedm.12044",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-007"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-006",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.2139/ssrn.2404880",
+            "title_hint": "Team Production in Competitive Labor Markets with Adverse Selection",
+            "identifier_hints": {
+              "doi": "10.2139/ssrn.2404880",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-007"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "von Reyn",
+          "query.title": "spike-timing action selection Drosophila giant fiber",
+          "filter": "from-pub-date:2014-01-01,until-pub-date:2014-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "B_author_year_strongest",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-009",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1038/nn.3741",
+            "title_hint": "A spike-timing mechanism for action selection",
+            "identifier_hints": {
+              "doi": "10.1038/nn.3741",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-014"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-010",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.21236/ada605312",
+            "title_hint": "Towards Interactive Timing Analysis for Designing Reactive Systems",
+            "identifier_hints": {
+              "doi": "10.21236/ada605312",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-014"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-011",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.bbi.2014.06.026",
+            "title_hint": "6. Adaptive reproduction: How timing of psychosocial stimulus affects birth outcome",
+            "identifier_hints": {
+              "doi": "10.1016/j.bbi.2014.06.026",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-014"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-012",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1111/jedm.12044",
+            "title_hint": "Improving the Bandwidth Selection in Kernel Equating",
+            "identifier_hints": {
+              "doi": "10.1111/jedm.12044",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-014"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-013",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.2139/ssrn.2404880",
+            "title_hint": "Team Production in Competitive Labor Markets with Adverse Selection",
+            "identifier_hints": {
+              "doi": "10.2139/ssrn.2404880",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-014"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "von Reyn",
+          "query.title": "spike-timing action selection",
+          "filter": "from-pub-date:2014-01-01,until-pub-date:2014-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "C_title_exact",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-016",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.04.03.024109",
+            "title_hint": "Spike timing in the attention network predicts behavioral outcome prior to target selection",
+            "identifier_hints": {
+              "doi": "10.1101/2020.04.03.024109",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-021"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-017",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1201/b14859-20",
+            "title_hint": "- Cortical Computations Using Relative Spike Timing",
+            "identifier_hints": {
+              "doi": "10.1201/b14859-20",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-021"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-018",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1201/b14859-16",
+            "title_hint": "- Spike Timing and Neural Codes for Odors",
+            "identifier_hints": {
+              "doi": "10.1201/b14859-16",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-021"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-019",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1201/b14859-19",
+            "title_hint": "- Spike Timing in Early Stages of Visual Processing",
+            "identifier_hints": {
+              "doi": "10.1201/b14859-19",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-021"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-020",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1201/b14859-14",
+            "title_hint": "Neural Encoding of Dynamic Inputs by Spike Timing",
+            "identifier_hints": {
+              "doi": "10.1201/b14859-14",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-021"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.bibliographic": "spike-timing action selection",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "legacy_pubmed_ebsco_query",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-023",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1242/jeb.244790",
+            "title_hint": "Azimuthal invariance to looming stimuli in the\n                    <i>Drosophila</i>\n                    giant fiber escape circuit",
+            "identifier_hints": {
+              "doi": "10.1242/jeb.244790",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-028"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-024",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2022.07.15.500271",
+            "title_hint": "Directional invariance in the\n                  <i>Drosophila</i>\n                  giant fiber escape circuit",
+            "identifier_hints": {
+              "doi": "10.1101/2022.07.15.500271",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-028"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-025",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.17918/00001171",
+            "title_hint": "Circuits for bilateral looming feature integration in Drosophila",
+            "identifier_hints": {
+              "doi": "10.17918/00001171",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-028"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-026",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2024.04.30.591368",
+            "title_hint": "A survival-critical role for\n                  <i>Drosophila</i>\n                  giant interneurons during predation",
+            "identifier_hints": {
+              "doi": "10.1101/2024.04.30.591368",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-028"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-027",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.cub.2019.01.079",
+            "title_hint": "Neural Basis for Looming Size and Velocity Encoding in the Drosophila Giant Fiber Escape Pathway",
+            "identifier_hints": {
+              "doi": "10.1016/j.cub.2019.01.079",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-028"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query": "\"von Reyn\" AND \"giant fiber\" AND \"Drosophila\"",
+          "rows": "5"
+        }
+      }
+    ]
+  },
+  "Q2": {
+    "search_order_id": "SO-Q2-Namiki-2018",
+    "compiled_query": "\"Namiki\" AND \"descending neuron\" AND (\"nomenclature\" OR \"giant fiber\")",
+    "expected_doi": "10.7554/eLife.34272",
+    "expected_pmid": "29943730",
+    "ladder_rungs": [
+      {
+        "rendering_path": "A_author_year_bibliographic",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-030",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272",
+            "title_hint": "The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-035"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-031",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272.063",
+            "title_hint": "Author response: The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272.063",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-035"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-032",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34275",
+            "title_hint": "Optogenetic dissection of descending behavioral control in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34275",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-035"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-033",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1038/s41467-018-05875-1",
+            "title_hint": "Speed dependent descending control of freezing behavior in Drosophila melanogaster",
+            "identifier_hints": {
+              "doi": "10.1038/s41467-018-05875-1",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-035"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-034",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34275.030",
+            "title_hint": "Author response: Optogenetic dissection of descending behavioral control in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34275.030",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-035"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "Namiki",
+          "query.title": "descending sensory-motor pathways Drosophila descending neuron nomenclature",
+          "filter": "from-pub-date:2018-01-01,until-pub-date:2018-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "B_author_year_strongest",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-037",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272",
+            "title_hint": "The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-042"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-038",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272.063",
+            "title_hint": "Author response: The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272.063",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-042"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-039",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1038/s41598-018-27954-5",
+            "title_hint": "Descending neurons from the lateral accessory lobe and posterior slope in the brain of the silkmoth Bombyx mori",
+            "identifier_hints": {
+              "doi": "10.1038/s41598-018-27954-5",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-042"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-040",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/247619",
+            "title_hint": "Descending pathways from the lateral accessory lobe and posterior slope in the brain of the silkmoth\n                  <i>Bombyx mori</i>",
+            "identifier_hints": {
+              "doi": "10.1101/247619",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-042"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-041",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1038/s41467-018-05875-1",
+            "title_hint": "Speed dependent descending control of freezing behavior in Drosophila melanogaster",
+            "identifier_hints": {
+              "doi": "10.1038/s41467-018-05875-1",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-042"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "Namiki",
+          "query.title": "descending sensory-motor pathways",
+          "filter": "from-pub-date:2018-01-01,until-pub-date:2018-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "C_title_exact",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-044",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272.062",
+            "title_hint": "Decision letter: The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272.062",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-049"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-045",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272.063",
+            "title_hint": "Author response: The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272.063",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-049"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-046",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.34272",
+            "title_hint": "The functional organization of descending sensory-motor pathways in Drosophila",
+            "identifier_hints": {
+              "doi": "10.7554/elife.34272",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-049"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-047",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/231696",
+            "title_hint": "The functional organization of descending sensory-motor pathways in\n                  <i>Drosophila</i>",
+            "identifier_hints": {
+              "doi": "10.1101/231696",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-049"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-048",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.55675/sjms.v3i4.110",
+            "title_hint": "Descending Motor Pathways",
+            "identifier_hints": {
+              "doi": "10.55675/sjms.v3i4.110",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-049"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.bibliographic": "descending sensory-motor pathways",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "legacy_pubmed_ebsco_query",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-051",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-981-33-6598-8_10",
+            "title_hint": "Descending Neuron for Freezing Behavior in Drosophila melanogaster",
+            "identifier_hints": {
+              "doi": "10.1007/978-981-33-6598-8_10",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-056"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-052",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.neuron.2012.12.024",
+            "title_hint": "CA3 Mossy Fiber Connections: Giant Synapses that Gain Control",
+            "identifier_hints": {
+              "doi": "10.1016/j.neuron.2012.12.024",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-056"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-053",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1002/cne.25513/v1/review2",
+            "title_hint": "Review for \"Organization of descending neurons in the brain of the desert locust\"",
+            "identifier_hints": {
+              "doi": "10.1002/cne.25513/v1/review2",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-056"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-054",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/s0896-6273(00)80365-7",
+            "title_hint": "Nomenclature of GPI-Linked Receptors for the GDNF Ligand Family",
+            "identifier_hints": {
+              "doi": "10.1016/s0896-6273(00)80365-7",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-056"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-055",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1385/0-89603-316-3:95",
+            "title_hint": "Learning from the Axon-Schwann Cell Relationships of the Giant Nerve Fiber of the Squid",
+            "identifier_hints": {
+              "doi": "10.1385/0-89603-316-3:95",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-056"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query": "\"Namiki\" AND \"descending neuron\" AND (\"nomenclature\" OR \"giant fiber\")",
+          "rows": "5"
+        }
+      }
+    ]
+  },
+  "Q3": {
+    "search_order_id": "SO-Q3-vonReyn-2020",
+    "compiled_query": "\"von Reyn\" AND \"2020\" AND \"Drosophila\" AND \"giant fiber\"",
+    "expected_doi": null,
+    "expected_pmid": null,
+    "ladder_rungs": [
+      {
+        "rendering_path": "A_author_year_bibliographic",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-058",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-3-476-05728-0_5282-1",
+            "title_hint": "Ferber, Edna: Giant",
+            "identifier_hints": {
+              "doi": "10.1007/978-3-476-05728-0_5282-1",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-063"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-059",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.3389/fneur.2020.00287",
+            "title_hint": "Endovascular Treatment of Intracerebral Giant Cell Arteritis",
+            "identifier_hints": {
+              "doi": "10.3389/fneur.2020.00287",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-063"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-060",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1002/bies.202000109",
+            "title_hint": "Copulation Song in<i>Drosophila</i>: Do Females Sing to Change Male Ejaculate Allocation and Incite Postcopulatory Mate Choice?",
+            "identifier_hints": {
+              "doi": "10.1002/bies.202000109",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-063"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-061",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1364/oe.398201",
+            "title_hint": "Hybrid electronically addressable random fiber laser",
+            "identifier_hints": {
+              "doi": "10.1364/oe.398201",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-063"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-062",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.30721/fsab2020.v3.i1.89",
+            "title_hint": "Structural characteristics and functional properties of fiber-rich by-products of white cabbage modified by high-energy wet media milling",
+            "identifier_hints": {
+              "doi": "10.30721/fsab2020.v3.i1.89",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-063"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "von Reyn",
+          "query.title": "giant fiber Drosophila",
+          "filter": "from-pub-date:2020-01-01,until-pub-date:2020-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "B_author_year_strongest",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-065",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-3-476-05728-0_5282-1",
+            "title_hint": "Ferber, Edna: Giant",
+            "identifier_hints": {
+              "doi": "10.1007/978-3-476-05728-0_5282-1",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-070"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-066",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.3389/fneur.2020.00287",
+            "title_hint": "Endovascular Treatment of Intracerebral Giant Cell Arteritis",
+            "identifier_hints": {
+              "doi": "10.3389/fneur.2020.00287",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-070"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-067",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1364/oe.398201",
+            "title_hint": "Hybrid electronically addressable random fiber laser",
+            "identifier_hints": {
+              "doi": "10.1364/oe.398201",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-070"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-068",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.30721/fsab2020.v3.i1.89",
+            "title_hint": "Structural characteristics and functional properties of fiber-rich by-products of white cabbage modified by high-energy wet media milling",
+            "identifier_hints": {
+              "doi": "10.30721/fsab2020.v3.i1.89",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-070"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-069",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/s10554-020-02076-0",
+            "title_hint": "Giant right coronary aneurysm: a coronary CT angiography exhibited severe aneurysmatic dilation of the right coronary artery",
+            "identifier_hints": {
+              "doi": "10.1007/s10554-020-02076-0",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-070"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "von Reyn",
+          "query.title": "giant fiber",
+          "filter": "from-pub-date:2020-01-01,until-pub-date:2020-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "C_title_exact",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-072",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.5040/9781501365072.6945",
+            "title_hint": "giant lily fiber",
+            "identifier_hints": {
+              "doi": "10.5040/9781501365072.6945",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-077"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-073",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1017/s0424820100094103",
+            "title_hint": "The Lateral Giant Fiber to Motor Giant Fiber Synapse in Crayfish",
+            "identifier_hints": {
+              "doi": "10.1017/s0424820100094103",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-077"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-074",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.giant.2023.100195",
+            "title_hint": "Biocompatible optical fiber for photomedical application",
+            "identifier_hints": {
+              "doi": "10.1016/j.giant.2023.100195",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-077"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-075",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1364/ofc.2021.tu1e.7",
+            "title_hint": "Giant Brillouin Amplification in Gas Using Hollow-core Fiber",
+            "identifier_hints": {
+              "doi": "10.1364/ofc.2021.tu1e.7",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-077"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-076",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.30707/etd2020.benson.a",
+            "title_hint": "Identification of innexins contributing to giant-fiber escape responses in marbled crayfish",
+            "identifier_hints": {
+              "doi": "10.30707/etd2020.benson.a",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-077"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.bibliographic": "giant fiber",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "legacy_pubmed_ebsco_query",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-079",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1242/jeb.244790",
+            "title_hint": "Azimuthal invariance to looming stimuli in the\n                    <i>Drosophila</i>\n                    giant fiber escape circuit",
+            "identifier_hints": {
+              "doi": "10.1242/jeb.244790",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-084"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-080",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2022.07.15.500271",
+            "title_hint": "Directional invariance in the\n                  <i>Drosophila</i>\n                  giant fiber escape circuit",
+            "identifier_hints": {
+              "doi": "10.1101/2022.07.15.500271",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-084"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-081",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.17918/00001171",
+            "title_hint": "Circuits for bilateral looming feature integration in Drosophila",
+            "identifier_hints": {
+              "doi": "10.17918/00001171",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-084"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-082",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2024.04.30.591368",
+            "title_hint": "A survival-critical role for\n                  <i>Drosophila</i>\n                  giant interneurons during predation",
+            "identifier_hints": {
+              "doi": "10.1101/2024.04.30.591368",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-084"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-083",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1016/j.cub.2019.01.079",
+            "title_hint": "Neural Basis for Looming Size and Velocity Encoding in the Drosophila Giant Fiber Escape Pathway",
+            "identifier_hints": {
+              "doi": "10.1016/j.cub.2019.01.079",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-084"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query": "\"von Reyn\" AND \"2020\" AND \"Drosophila\" AND \"giant fiber\"",
+          "rows": "5"
+        }
+      }
+    ]
+  },
+  "Q4": {
+    "search_order_id": "SO-Q4-Scheffer-2020",
+    "compiled_query": "\"Scheffer\" AND (\"hemibrain\" OR \"connectome\")",
+    "expected_doi": "10.7554/eLife.57443",
+    "expected_pmid": "32880371",
+    "ladder_rungs": [
+      {
+        "rendering_path": "A_author_year_bibliographic",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-086",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.05.18.102061",
+            "title_hint": "Graph Properties of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.05.18.102061",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-091"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-087",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.57443",
+            "title_hint": "A connectome and analysis of the adult Drosophila central brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.57443",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-091"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-088",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.01.21.911859",
+            "title_hint": "A Connectome of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.01.21.911859",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-091"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-089",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.04.07.030213",
+            "title_hint": "A Connectome and Analysis of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.04.07.030213",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-091"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-090",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.57443.sa2",
+            "title_hint": "Author response: A connectome and analysis of the adult Drosophila central brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.57443.sa2",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-091"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "Scheffer",
+          "query.title": "connectome adult Drosophila central brain hemibrain",
+          "filter": "from-pub-date:2020-01-01,until-pub-date:2020-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "B_author_year_strongest",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-093",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.05.18.102061",
+            "title_hint": "Graph Properties of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.05.18.102061",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-098"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-094",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.57443",
+            "title_hint": "A connectome and analysis of the adult Drosophila central brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.57443",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-098"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-095",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.01.21.911859",
+            "title_hint": "A Connectome of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.01.21.911859",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-098"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-096",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.04.07.030213",
+            "title_hint": "A Connectome and Analysis of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.04.07.030213",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-098"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-097",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.57443.sa2",
+            "title_hint": "Author response: A connectome and analysis of the adult Drosophila central brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.57443.sa2",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-098"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.author": "Scheffer",
+          "query.title": "connectome adult Drosophila central brain",
+          "filter": "from-pub-date:2020-01-01,until-pub-date:2020-12-31",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "C_title_exact",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-100",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.57443.sa1",
+            "title_hint": "Decision letter: A connectome and analysis of the adult Drosophila central brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.57443.sa1",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-105"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-101",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.7554/elife.26975.036",
+            "title_hint": "Decision letter: A connectome of a learning and memory center in the adult Drosophila brain",
+            "identifier_hints": {
+              "doi": "10.7554/elife.26975.036",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-105"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-102",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.35802/220343",
+            "title_hint": null,
+            "identifier_hints": {
+              "doi": "10.35802/220343",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-105"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-103",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.35802/221300",
+            "title_hint": null,
+            "identifier_hints": {
+              "doi": "10.35802/221300",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-105"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-104",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2020.05.18.102061",
+            "title_hint": "Graph Properties of the Adult\n                  <i>Drosophila</i>\n                  Central Brain",
+            "identifier_hints": {
+              "doi": "10.1101/2020.05.18.102061",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-105"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query.bibliographic": "connectome adult Drosophila central brain",
+          "rows": "5"
+        }
+      },
+      {
+        "rendering_path": "legacy_pubmed_ebsco_query",
+        "candidate_count": 5,
+        "candidate_pointers": [
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-107",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1101/2021.05.15.444029",
+            "title_hint": "Evidence of wiring development processes from the connectome of adult\n                  <i>Drosophila</i>",
+            "identifier_hints": {
+              "doi": "10.1101/2021.05.15.444029",
+              "pmid": null
+            },
+            "rank": 1,
+            "retrieval_invocation_id": "RIV-112"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-108",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-1-4614-7320-6_275-1",
+            "title_hint": "Drosophila Connectome",
+            "identifier_hints": {
+              "doi": "10.1007/978-1-4614-7320-6_275-1",
+              "pmid": null
+            },
+            "rank": 2,
+            "retrieval_invocation_id": "RIV-112"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-109",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-1-4614-6675-8_275",
+            "title_hint": "Connectome, Drosophila",
+            "identifier_hints": {
+              "doi": "10.1007/978-1-4614-6675-8_275",
+              "pmid": null
+            },
+            "rank": 3,
+            "retrieval_invocation_id": "RIV-112"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-110",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-1-0716-1006-0_275",
+            "title_hint": "Connectome, Drosophila",
+            "identifier_hints": {
+              "doi": "10.1007/978-1-0716-1006-0_275",
+              "pmid": null
+            },
+            "rank": 4,
+            "retrieval_invocation_id": "RIV-112"
+          },
+          {
+            "schema_version": "3.0-p1",
+            "candidate_pointer_id": "CP-111",
+            "provider": "crossref_v1",
+            "provider_result_id": "10.1007/978-1-4614-7320-6_275-2",
+            "title_hint": "Connectome, Drosophila",
+            "identifier_hints": {
+              "doi": "10.1007/978-1-4614-7320-6_275-2",
+              "pmid": null
+            },
+            "rank": 5,
+            "retrieval_invocation_id": "RIV-112"
+          }
+        ],
+        "invocation_status": "ok",
+        "http_status": 200,
+        "url": {
+          "query": "\"Scheffer\" AND (\"hemibrain\" OR \"connectome\")",
+          "rows": "5"
+        }
+      }
+    ]
+  },
+  "Q5": {
+    "search_order_id": "SO-Q5-entity",
+    "compiled_query": null,
+    "expected_doi": null,
+    "expected_pmid": null,
+    "status": "ENTITY_RESOLUTION_REQUIRED",
+    "rationale": "Production MAFS v3.0 scholarly stack lacks FlyWire / VFB / hemibrain dataset adapters. The exact GF (DNp01) body IDs in FlyWire v783 and hemibrain v1.2.1 cannot be resolved by this stack. HO-supplied seeds are HISTORICAL_ENTITY_ANCHOR_UNVERIFIED per entity_anchor_oracle.json.",
+    "entity_anchor_references": [
+      "E1-FlyWire-v783-right-GF",
+      "E2-FlyWire-v783-left-GF",
+      "E3-hemibrain-v1.2.1-right-GF"
+    ]
+  }
+}

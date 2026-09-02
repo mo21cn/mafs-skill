@@ -1,0 +1,75 @@
+{
+  "artifact_id": "CQS-CQC-P0-A",
+  "schema_version": "0.1",
+  "source_narrative_sha256": "35f47188c87e80086e3d355c682b71a39493dbed63690f2f284eafe6e4112c92",
+  "source_narrative": "# Narrative A — GF / EM identity-lineage task (real replay domain: mafs-v3-p0 Replay B)\n\n## Task origin\n\nThis narrative comes from a real operator task in the MAFS v3.0 Replay B benchmark line. The verbatim operator request is:\n\n请调整 MAFS 搜索：von Reyn et al. 2014/2020 等论文补充材料里的 GF 神经元 ID 清单。\n\n## Background facts established by prior verified work\n\nThe Drosophila Giant Fiber (GF) escape circuit has been studied for decades with electrophysiology, and more recently with connectomics datasets.\n\nThe 2014 paper by the von Reyn team is \"A spike-timing mechanism for action selection\", published in Nature Neuroscience (volume 17, pages 962-970, DOI 10.1038/nn.3741, PMID 24908103).\n\nThe standardized descending-neuron nomenclature comes from Namiki et al. 2018 in eLife (\"The functional organization of descending sensory-motor pathways in Drosophila\", DOI 10.7554/eLife.34272), which labels the Giant Fiber as DNp01.\n\nThe FlyWire v783 and hemibrain v1.2.1 datasets identify GF candidate bodies by numeric root IDs, but the specific root IDs supplied by the operator for the right and left GF have not been independently confirmed against dataset annotations.\n\n## Known ambiguities in the request\n\nWhether \"von Reyn 2020\" refers to a real Giant Fiber paper is doubtful: the major 2020 Drosophila connectome work is Scheffer et al. 2020 (\"A connectome and analysis of the adult Drosophila central brain\", eLife), from a largely overlapping Janelia collaboration, which may be what the operator conflated.\n\nThe historical label \"DNg01\" appears in some pre-2018 literature; no authoritative primary source has confirmed that DNg01 is a synonym of DNp01, so the two must not be silently treated as the same neuron class.\n\nIt is also unverified whether the supplementary materials of von Reyn 2014 actually contain a GF neuron ID list at all.\n\n## Goal\n\nPrepare an executable question set for downstream MAFS retrieval: confirm source identity and content, confirm the naming lineage, and clarify whether the 2020 citation is a conflation.\n",
+  "questions": [
+    {
+      "question_id": "CQ-01",
+      "statement": "von Reyn 2014 (Nature Neuroscience 17:962-970, DOI 10.1038/nn.3741) 的补充材料中是否真的包含 GF 神经元 ID 清单？若存在，清单覆盖哪些神经元？",
+      "source_trace": [
+        {
+          "exact_quote": "It is also unverified whether the supplementary materials of von Reyn 2014 actually contain a GF neuron ID list at all."
+        }
+      ],
+      "question_type": "SOURCE_CONTENT",
+      "dependencies": [],
+      "resolution_condition": "证据条件：von Reyn 2014 (Nature Neuroscience 17:962-970) 补充材料内容本身。若其中包含 GF 神经元 ID 清单，问题以『存在 + 清单覆盖范围』解决；若确认不含，以『明确不存在』解决。标题与摘要层面的推断不足以裁决任一方向。",
+      "uncertainty": "补充材料的公开可及性未知；若仅部分可及，结论须区分『确认不存在』与『无法确认』。"
+    },
+    {
+      "question_id": "CQ-02",
+      "statement": "用户所引『von Reyn 2020』是否是一篇真实存在的 GF 研究论文，还是与 Scheffer et al. 2020（果蝇中央脑连接组，eLife）的引用混淆？",
+      "source_trace": [
+        {
+          "exact_quote": "Whether \"von Reyn 2020\" refers to a real Giant Fiber paper is doubtful: the major 2020 Drosophila connectome work is Scheffer et al. 2020 (\"A connectome and analysis of the adult Drosophila central brain\", eLife), from a largely overlapping Janelia collaboration, which may be what the operator conflated."
+        }
+      ],
+      "question_type": "ENTITY_RESOLUTION",
+      "dependencies": [],
+      "resolution_condition": "证据条件：存在或不存在一篇 2020 年发表的、作者含 von Reyn 且主题为 GF 的研究论文的可验证书目记录。前者→问题转为确认该论文的身份与 GF 相关性；后者（在证据覆盖充分的前提下）→支持『引用混淆』判定，其混淆对象最可能是 Scheffer et al. 2020 的果蝇中央脑连接组论文。",
+      "uncertainty": "若检索发现真实的 von Reyn 2020 GF 论文，本问题从『混淆判定』转为『确认该论文身份』；叙事当前只提供了怀疑依据，未提供否定证据。"
+    },
+    {
+      "question_id": "CQ-03",
+      "statement": "GF / Giant Fiber / DNp01 的等同映射是否由权威一手来源确立？",
+      "source_trace": [
+        {
+          "exact_quote": "which labels the Giant Fiber as DNp01"
+        }
+      ],
+      "question_type": "TERMINOLOGY_OR_NAMING",
+      "dependencies": [],
+      "resolution_condition": "确立条件：Namiki et al. 2018 (eLife 7:e34272) 原文对 DNp01 的定义与 Virtual Fly Brain 官方条目 FBbt:00004020 的记录对 GF（Giant Fiber）→DNp01 映射的记载一致。二者一致即视为命名关系确立；不一致则把分歧本身记录为解决状态。",
+      "uncertainty": null
+    },
+    {
+      "question_id": "CQ-04",
+      "statement": "历史文献中出现的标签 DNg01 是否与 DNp01 指同一神经元类别？",
+      "source_trace": [
+        {
+          "exact_quote": "no authoritative primary source has confirmed that DNg01 is a synonym of DNp01, so the two must not be silently treated as the same neuron class"
+        }
+      ],
+      "question_type": "HISTORICAL_LINEAGE",
+      "dependencies": [],
+      "resolution_condition": "确立条件：任一权威一手来源（如 FlyBase 参考报告、Virtual Fly Brain 条目、原始文献中的神经元命名表述）对 DNg01 与 DNp01 关系的明确记载。记载为同义→同义关系成立；记载为区分→维持不同类别；无任何明确记载→保持 DISTINCT_NEURON_CLASS_UNLESS_AUTHORITATIVE_EVIDENCE 立场，且该立场本身就是问题的当前解决状态。",
+      "uncertainty": "当前所有已知权威来源均未证实同义关系；本问题的结论可能随新的一手证据翻转。"
+    },
+    {
+      "question_id": "CQ-05",
+      "statement": "GF（DNp01）在 FlyWire v783 与 hemibrain v1.2.1 数据集中的体节 root ID 分别是什么？",
+      "source_trace": [
+        {
+          "exact_quote": "the specific root IDs supplied by the operator for the right and left GF have not been independently confirmed against dataset annotations"
+        }
+      ],
+      "question_type": "ENTITY_RESOLUTION",
+      "dependencies": [
+        "CQ-03"
+      ],
+      "resolution_condition": "证据条件：数据集官方注释记录（FlyWire annotations 发布库 / neuPrint 兼容接口 / hemibrain 官方文档）中 DNp01 的左右体节 root ID。该记录与操作者所提供 ID 的一致或不一致即为问题的解决状态；结论必须绑定具体数据集版本（v783、FAFB14.1、annotation v2.1.0 等）。",
+      "uncertainty": "操作者提供的 root ID 未经独立验证，且 root ID 可能随数据集版本（v783、FAFB14.1、annotation v2.1.0）变化；结论必须绑定具体数据集版本。"
+    }
+  ]
+}

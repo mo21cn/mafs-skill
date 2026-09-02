@@ -1,0 +1,84 @@
+{
+  "artifact_id": "BUDGET-GF-EM-A",
+  "schema_version": "0.1",
+  "source_srp_id": "SRP-GF-EM-A",
+  "source_srp_sha256": "cf87b6876485a13d228af8b4158938c4c9bde4b1ef5dbb10d448a2c3ac54148a",
+  "budget_intent": {
+    "mode": "STANDARD",
+    "operator_goal": "Resolve the GF / DNp01 identity + naming lineage and record the honest entity-ID boundary for the requested search."
+  },
+  "total_envelope": {
+    "wall_clock": {
+      "target_minutes": 30,
+      "hard_ceiling_minutes": 60
+    },
+    "model_tokens": {
+      "target_tokens": 40000,
+      "hard_ceiling_tokens": 120000
+    }
+  },
+  "allocations": [
+    {
+      "allocation_id": "AL01",
+      "requirement_id": "R01",
+      "route_id": "paper_identity_crossref",
+      "activation": "COMMITTED",
+      "wall_clock_target_minutes": 6,
+      "model_token_target": 9000,
+      "rationale": "Recover the von Reyn 2014 paper identity via Crossref (bounded top-k, three-rung ladder)."
+    },
+    {
+      "allocation_id": "AL02",
+      "requirement_id": "R02",
+      "route_id": "negative_branch_search",
+      "activation": "COMMITTED",
+      "wall_clock_target_minutes": 6,
+      "model_token_target": 9000,
+      "rationale": "Run the bounded negative-branch search for the claimed 'von Reyn 2020 GF paper'."
+    },
+    {
+      "allocation_id": "AL03",
+      "requirement_id": "R03",
+      "route_id": "nomenclature_primary_source",
+      "activation": "COMMITTED",
+      "wall_clock_target_minutes": 6,
+      "model_token_target": 9000,
+      "rationale": "Recover the Namiki et al. 2018 paper to record the DNp01 nomenclature."
+    },
+    {
+      "allocation_id": "AL04",
+      "requirement_id": "R04",
+      "route_id": "historical_lineage_check",
+      "activation": "COMMITTED",
+      "wall_clock_target_minutes": 4,
+      "model_token_target": 7000,
+      "rationale": "Checked against primary sources that would establish or refute a DNg01 == DNp01 synonymy; otherwise recorded as distinct."
+    },
+    {
+      "allocation_id": "AL05",
+      "requirement_id": "R05",
+      "route_id": "dataset_entity_adapter",
+      "activation": "RESERVE_CONDITIONAL",
+      "wall_clock_target_minutes": 10,
+      "model_token_target": 16000,
+      "rationale": "Held in reserve: resolving the FlyWire / hemibrain root IDs requires a dataset adapter not present in the current scholarly stack; activated only if an adapter is explicitly granted."
+    }
+  ],
+  "escalation_policy": {
+    "triggers": [
+      {
+        "trigger": "A dataset adapter for FlyWire / VFB / hemibrain is explicitly granted",
+        "action": "REALLOCATE_WITHIN_CEILING"
+      },
+      {
+        "trigger": "Source-content access for R01 requires more than the committed wall-clock",
+        "action": "RETURN_INSUFFICIENT"
+      }
+    ]
+  },
+  "feasibility": {
+    "status": "FEASIBLE",
+    "unfunded_obligations": [],
+    "constraint_note": "R01-R04 obligations are funded within the envelope and are fully covered by the production scholarly stack. R05 (dataset entity resolution) is a CONDITIONAL route held in reserve because the stack lacks a FlyWire/VFB/hemibrain adapter; it is not a REQUIRED obligation and does not make the envelope INSUFFICIENT."
+  }
+}
