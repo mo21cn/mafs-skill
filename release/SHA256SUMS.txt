@@ -1,7 +1,7 @@
 ea27f38689145b4e1825a493c180d53f2ee3c5bffc6719a24bd83aa8246ae4cd  mafs-skill/README.md
 59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03  mafs-skill/VERSION
 865d37210530e80a2fc91c8349d653e821f4565b80fe7f3b38015516fb0583af  mafs-skill/release/BASELINES.json
-a0ba358319723184bd2c676343429968f538f25ce1c6a9861207f0571029bc62  mafs-skill/release/DELIVERY_MANIFEST.json
+9edf984e2d77c9cec99422bb7c65c1533944c3224153e86502e632d552f82aaf  mafs-skill/release/DELIVERY_MANIFEST.json
 f81ac12a00d59ebf349264311cc565cbf4e998ce29a6eb4fed89643b96917cb0  mafs-skill/scripts/doctor.py
 fb8202a6b63eb8c4ec3b914b0a9586e194efa1ef0b7eead65752ff1903d89c43  mafs-skill/scripts/install.py
 2da4309a59ffd32c377329a2322826b264f0c4a41d789cc2290a121cb72382ef  mafs-skill/scripts/resolve_runtime_dependencies.py
@@ -12,9 +12,7 @@ caf7058d39fbc8f08e76869ff629cc7719764812c6e559b4146e4a52a1e99a5f  mafs-skill/ski
 49d185c3cf0be9a1753636d077494ce81586b2a1c0732c8bc8e6fecc4367dc2a  mafs-skill/skill/mafs-skill-1-0/references/BASELINES.md
 046f431bdd19a21a590f582531ac3b260e84be0ceddef2b07a720f990c10ff0a  mafs-skill/skill/mafs-skill-1-0/references/CQC_ARTIFACT_CHAIN.md
 5f0250b7994fe3d0767b376628206b209a55ba0512ecfe98ac7128c873df75a4  mafs-skill/skill/mafs-skill-1-0/references/MAFS_RUNTIME_BOUNDARY.md
-33532835f5390fb8ca5dcc87a0b53974f76631422f4226f0f252eda738bfb413  mafs-skill/skill/mafs-skill-1-0/release/BASELINES.json
-7a2e457472a5c070572661e9d284b6dbaa0aeb60744c1ca6b002d3ad7adb5af2  mafs-skill/skill/mafs-skill-1-0/scripts/__pycache__/doctor.cpython-313.pyc
-774f2189d98e37806af2099d32704782293158bf284dff9294b6ca74b98f4e95  mafs-skill/skill/mafs-skill-1-0/scripts/__pycache__/resolve_runtime_dependencies.cpython-313.pyc
+865d37210530e80a2fc91c8349d653e821f4565b80fe7f3b38015516fb0583af  mafs-skill/skill/mafs-skill-1-0/release/BASELINES.json
 e37683044788149e5ba43a6f79e8a2c3e3bb3718715af025dec3e34d7884ec53  mafs-skill/skill/mafs-skill-1-0/scripts/_runtime_truth.py
 f81ac12a00d59ebf349264311cc565cbf4e998ce29a6eb4fed89643b96917cb0  mafs-skill/skill/mafs-skill-1-0/scripts/doctor.py
 2da4309a59ffd32c377329a2322826b264f0c4a41d789cc2290a121cb72382ef  mafs-skill/skill/mafs-skill-1-0/scripts/resolve_runtime_dependencies.py

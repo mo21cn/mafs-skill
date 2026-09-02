@@ -81,6 +81,31 @@ def file_sha256(p: Path) -> str:
     return h.hexdigest()
 
 
+# Source-file line-ending normalization: a Windows CI with
+# `core.autocrlf=true` checks out text files with CRLF, which makes
+# the bytes platform-dependent. To get cross-platform byte-stable
+# ZIPs, we strip CR bytes from known-text extensions before
+# compression. Binary extensions are left untouched.
+_TEXT_NORMALIZE_EXTS = frozenset(
+    {".md", ".py", ".json", ".yaml", ".yml", ".txt", ".md",
+     ".jsonc", ".toml", ".cfg", ".ini"}
+)
+
+
+def normalized_source_bytes(p: Path) -> bytes:
+    """Read a source file's bytes with CRLF normalized to LF.
+
+    For known text extensions, replaces b"\\r\\n" with b"\\n" and
+    removes any trailing b"\\r". For other extensions, returns
+    the raw bytes.
+    """
+    raw = p.read_bytes()
+    if p.suffix.lower() in _TEXT_NORMALIZE_EXTS:
+        # Replace CRLF with LF, then drop any remaining bare CRs.
+        return raw.replace(b"\r\n", b"\n").replace(b"\r", b"")
+    return raw
+
+
 def canonical_file_list() -> list[tuple[Path, str]]:
     """Return [(abs_path, arcname_in_zip), ...] sorted by arcname.
 
@@ -150,7 +175,7 @@ def build_zip(version: str) -> tuple[Path, str]:
     with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED,
                          compresslevel=FIXED_COMPRESS_LEVEL) as zf:
         for src, arcname in files:
-            data = src.read_bytes()
+            data = normalized_source_bytes(src)
             info = make_zipinfo(arcname)
             zf.writestr(info, data)
 
@@ -166,7 +191,9 @@ def write_shasums(zip_path: Path, zip_sha: str) -> None:
     """Hash the portable INTERNAL content only (RA1 §17).
 
     Does NOT include the final ZIP and does NOT include itself
-    (no self-hash loop)."""
+    (no self-hash loop). Hashes use the same CRLF-normalized
+    bytes that go into the ZIP, so the SHA256SUMS content
+    matches what the ZIP actually contains."""
     files = canonical_file_list()
     lines: list[str] = []
     for src, arcname in files:
@@ -175,9 +202,8 @@ def write_shasums(zip_path: Path, zip_sha: str) -> None:
             continue
         if arcname.endswith("release/SHA256SUMS.txt"):
             continue
-        # SHA over the canonical on-disk bytes, reported with the
-        # same arcname that appears inside the ZIP.
-        lines.append(f"{file_sha256(src)}  {arcname}")
+        # SHA over the normalized bytes that will be in the ZIP.
+        lines.append(f"{hashlib.sha256(normalized_source_bytes(src)).hexdigest()}  {arcname}")
     SHASUMS_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
