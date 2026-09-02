@@ -1,5 +1,6 @@
 ---
 name: mafs-skill-1-0
+description: "MAFS Skill 1.0 runs the CQC (P0..P5) then MAFS (P0..P3) falsification-search workflow. Bootstrap gate first reads release/BASELINES.json, runs resolve_runtime_dependencies.py, and runs doctor.py; only then does it digest a research narrative through CQS, SRP, BudgetEnvelope, and IntegrationBinding, hands off to MAFS discover, STOP, explicit CandidatePointer selection, and resolve."
 version: 1.0.0
 product: MAFS Skill 1.0
 contract: MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1

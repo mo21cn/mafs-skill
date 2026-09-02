@@ -76,6 +76,79 @@ def agents_target() -> Path:
     return Path.home() / ".agents" / "skills"
 
 
+def dsh_target() -> Path:
+    """DSH Desktop global skills directory.
+
+    Per MAINTENANCE_ADVISORY_v0.2 §3.E, DSH is a first-class deployment
+    target. Path resolution is **deterministic**, **documented**, and
+    **overrideable** (via DSH_HOME).
+
+    Resolution order:
+      1. $DSH_HOME/skills  (if DSH_HOME is set and non-empty)
+      2. %APPDATA%\\dsh-desktop\\harness\\skills (Windows)
+      3. $HOME/Library/Application Support/dsh-desktop/harness/skills (macOS)
+      4. $XDG_CONFIG_HOME/dsh-desktop/harness/skills  (Linux; default
+         $XDG_CONFIG_HOME = ~/.config)
+
+    This function does NOT depend on whether DSH is actually installed;
+    it always returns a deterministic path. If the user picks the
+    dsh target on a machine without DSH, the install still proceeds;
+    the harness will discover the skill when it is started.
+    """
+    import os
+    env = os.environ.get("DSH_HOME", "").strip()
+    if env:
+        return Path(env) / "skills"
+    if sys.platform == "win32":
+        return Path(os.environ["APPDATA"]) / "dsh-desktop" / "harness" / "skills"
+    if sys.platform == "darwin":
+        return (Path.home() / "Library" / "Application Support"
+                / "dsh-desktop" / "harness" / "skills")
+    cfg = os.environ.get("XDG_CONFIG_HOME", "").strip()
+    base = Path(cfg) if cfg else (Path.home() / ".config")
+    return base / "dsh-desktop" / "harness" / "skills"
+
+
+def check_legacy_skill_shadow() -> None:
+    """Per MAINTENANCE_ADVISORY_v0.2 §2.3 / §3.D, detect the OMX-era
+    legacy `multi_axis_falsification_search` skill in the active Codex
+    discovery surface. Emit a warning; do NOT auto-move or auto-delete.
+
+    A successful detection is non-fatal. The user is responsible for
+    running the archive step manually (the advisory gives explicit
+    authorization to do so).
+
+    Respects `CODEX_HOME` env var (same as `codex_target`).
+    """
+    import os
+    env = os.environ.get("CODEX_HOME", "").strip()
+    codex_root = Path(env) if env else Path.home() / ".codex"
+    codex_skills = codex_root / "skills"
+    legacy = codex_skills / "multi_axis_falsification_search"
+    if not legacy.is_dir():
+        return
+    archive_target = (codex_root / "skills-archive"
+                      / "multi_axis_falsification_search-v0.1")
+    print(
+        f"LEGACY_SKILL_SHADOWING_DETECTED: {legacy}",
+        file=sys.stderr,
+    )
+    print(
+        "  presence in active Codex discovery may cause semantic shadowing "
+        "with mafs-skill-1-0",
+        file=sys.stderr,
+    )
+    print(
+        f"  recommended: move to {archive_target}",
+        file=sys.stderr,
+    )
+    print(
+        "  installer does NOT auto-move; user must run manually "
+        "(see MAINTENANCE_ADVISORY_v0.2 §2.3)",
+        file=sys.stderr,
+    )
+
+
 def resolve_target(args: argparse.Namespace) -> tuple[str, Path]:
     if args.target_dir:
         return "explicit", Path(args.target_dir).resolve()
@@ -83,6 +156,8 @@ def resolve_target(args: argparse.Namespace) -> tuple[str, Path]:
         return "codex", codex_target()
     if args.target == "agents":
         return "agents", agents_target()
+    if args.target in ("dsh", "dsh-desktop"):
+        return "dsh", dsh_target()
     raise SystemExit("resolve_target: no target selected (logic error)")
 
 
@@ -119,7 +194,7 @@ def emit(status: str, **fields) -> None:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--target", choices=("codex", "agents"))
+    ap.add_argument("--target", choices=("codex", "agents", "dsh", "dsh-desktop"))
     ap.add_argument("--target-dir")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args(argv)
@@ -132,6 +207,11 @@ def main(argv=None) -> int:
         for m in missing:
             print(f"MISSING_REQUIRED_FILE: {m}", file=sys.stderr)
         return 3
+
+    # Legacy Codex skill shadow detection (per advisory §2.3 / §3.D).
+    # Always run; non-fatal. Only relevant for codex target but emit
+    # for any target so the user sees it.
+    check_legacy_skill_shadow()
 
     try:
         kind, target_root = resolve_target(args)
