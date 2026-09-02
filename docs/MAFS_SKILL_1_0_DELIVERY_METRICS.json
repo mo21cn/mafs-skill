@@ -1,4 +1,8 @@
 {
+  "_status": "SUPERSEDED_BY_DELIVERY_RA1",
+  "_supersession_marker": "SUPERSEDED_BY_DELIVERY_RA1",
+  "_supersession_contract": "MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1",
+  "_note": "This v0 metrics file is preserved as a governance audit trail only. The canonical current acceptance truth is docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json (per RA1 §24). Per RA1 §2, the premature merge is a RECORDED_GOVERNANCE_DEVIATION; it does not establish an authorization precedent.",
   "schema_version": "mafs-skill-delivery-metrics.v1",
   "product": "MAFS Skill 1.0",
   "version": "1.0.0",
