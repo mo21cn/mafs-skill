@@ -49,14 +49,31 @@ MAFS_NAME = "mafs-v3-p0"
 
 
 def check_git() -> str | None:
+    """Verify git binary is present and runnable.
+
+    Per MAINTENANCE_ADVISORY_v0.2 §2.4, this probe does NOT participate in
+    truth judgment (commit identity / pin verification / remote availability
+    are handled by other functions that preserve capture_output). We use
+    DEVNULL + returncode only to avoid triggering an avoidable DSH approval.
+    The specific stderr message is intentionally not surfaced; the binary
+    presence + returncode is the only signal that matters here.
+
+    Returns:
+      None                          git is present and returned 0
+      "<DEPENDENCY_TOOL_MISSING…>"  otherwise (binary missing, non-zero
+                                     return, or invocation error)
+    """
     if shutil.which("git") is None:
         return "DEPENDENCY_TOOL_MISSING: git binary not on PATH"
     try:
         r = subprocess.run(
-            ["git", "--version"], capture_output=True, text=True, timeout=10,
+            ["git", "--version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
         )
         if r.returncode != 0:
-            return f"DEPENDENCY_TOOL_MISSING: git --version failed: {r.stderr.strip()}"
+            return f"DEPENDENCY_TOOL_MISSING: git --version returned {r.returncode}"
         return None
     except Exception as exc:
         return f"DEPENDENCY_TOOL_MISSING: git invocation failed: {exc}"

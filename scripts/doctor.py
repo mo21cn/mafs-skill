@@ -53,11 +53,29 @@ def find_installed_skill() -> str | None:
 
 
 def git_version() -> str:
+    """Return a coarse git-presence marker for overall_state() judgment.
+
+    Per MAINTENANCE_ADVISORY_v0.2 §2.4, this probe does NOT participate in
+    truth judgment (commit identity / pin verification / diagnosis of
+    specific files are handled elsewhere with capture_output preserved).
+    We use DEVNULL + returncode only to avoid triggering an avoidable DSH
+    approval; the actual version string is intentionally not returned.
+
+    Possible return values:
+      "MISSING"            shutil.which("git") is None
+      "ERROR: <exception>" subprocess call raised
+      "PRESENT"            git --version returned 0
+    """
     if shutil.which("git") is None:
         return "MISSING"
     try:
-        r = subprocess.run(["git", "--version"], capture_output=True, text=True, timeout=10)
-        return r.stdout.strip() or "UNKNOWN"
+        r = subprocess.run(
+            ["git", "--version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+        )
+        return "PRESENT" if r.returncode == 0 else f"ERROR: git --version returned {r.returncode}"
     except Exception as exc:
         return f"ERROR: {exc}"
 

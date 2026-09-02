@@ -15,3 +15,18 @@ _*.tmp.local
 _test_out*.txt
 _test_final.txt
 _test_output.txt
+
+# Phase 2 maintenance: scratch and user-supplied evidence (Mavis)
+.scratch/
+_user_attaches/
+_*.local
+_*.tmp
+_dbg_*.py
+_dbg_*.py.local
+_p1_*.py
+_copy_to_i.py
+_inspect_*.py
+_session_*.py
+_read_*.py
+_zip_*.py
+
