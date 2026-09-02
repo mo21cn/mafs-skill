@@ -153,8 +153,27 @@ jobs:
             exit 1
           }
 
-      - name: Unit / regression tests
+      - name: Unit / regression tests (RA1)
         shell: pwsh
         run: |
           python -m unittest discover -s tests -p "test_ra1_*.py" -v
-          if ($LASTEXITCODE -ne 0) { Write-Error "tests failed"; exit 1 }
+          if ($LASTEXITCODE -ne 0) { Write-Error "RA1 tests failed"; exit 1 }
+
+      - name: Phase 2 hardening tests (per MAINTENANCE_ADVISORY_v0.2 evidence gate)
+        shell: pwsh
+        run: |
+          $hardeningTests = @(
+            'test_evidence_id_stable.py',
+            'test_provenance_retry.py',
+            'test_report_fail_closed.py',
+            'test_legacy_shadow.py'
+          )
+          foreach ($t in $hardeningTests) {
+            Write-Host "--- running tests/$t ---"
+            python "tests/$t"
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Phase 2 hardening test $t failed"
+              exit 1
+            }
+          }
+          Write-Host "All 4 Phase 2 hardening test files (21 tests) PASS."
