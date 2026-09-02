@@ -3,9 +3,6 @@
 contract: MAFS-SKILL-1.0-DELIVERY-RA1-SELF-CONTAINED-EXACT-RUNTIME-REPRODUCIBLE-PACKAGE-v0.1
 deliverer: Local Claw (Mavis)
 delivery_date: 2026-09-02
-status: PENDING_PUSH_A (this Summary is the deliverer's
-audit-trail view; canonical machine truth is
-`docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json`)
 
 > **STATUS WORKFLOW**
 >
@@ -14,8 +11,12 @@ audit-trail view; canonical machine truth is
 > canonical current acceptance truth is:
 > - `docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json`
 >
-> Any field marked `PENDING_PUSH_A` is awaiting Push A CI
-> confirmation.
+> The metrics file declares an `acceptance_stage` field:
+> - `PUSH_A_PREBIND` — implementation commit; CI-evidence fields may
+>   carry `NOT_EVALUATED_PENDING_PUSH_A` per the explicit whitelist
+>   (HO+ChatGPT Push-A Remediation authorization, 2026-09-02)
+> - `FINAL_BOUND` — Push B; every CI-evidence field must be
+>   concretely bound and PASS
 
 ---
 
@@ -180,32 +181,43 @@ the top of this document. The v0 metrics and summary files are
 preserved as governance audit trail only and carry explicit
 `SUPERSEDED_BY_DELIVERY_RA1` markers.
 
-| Field | Value |
-|---|---|
-| `installed_skill_self_contained` | `true` |
-| `portable_only_install_pass` | `true` |
-| `installed_resolver_invoked` | `true` |
-| `installed_doctor_invoked` | `true` |
-| `runtime_ready_pass` | `true` |
-| `managed_runtime_only` | `true` |
-| `user_override_never_executable` | `true` |
-| `resolver_doctor_truth_consistent` | `true` |
-| `wrong_repo_no_mutation_pass` | `true` |
-| `tracked_runtime_dirty_detection_pass` | `true` |
-| `portable_zip_built` | `true` |
-| `portable_zip_sha256` | `2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b` |
-| `portable_zip_size_bytes` | `42276` |
-| `portable_zip_internal_manifest_pass` | `true` |
-| `portable_zip_internal_shasums_pass` | `true` |
-| `reproducible_build_local_pass` | `true` |
-| `cross_platform_zip_sha_equal` | `PENDING_PUSH_A` |
-| `codex_install_layout_pass` | `true` |
-| `codex_discovery_smoke_status` | `NOT_EVALUATED_BY_CI` |
-| `live_scientific_search_executed` | `false` |
-| `cqc_production_modified` | `false` |
-| `mafs_production_modified` | `false` |
-| `repository_integration_path` | `PATH_C` |
-| `governance_deviation_recorded` | `true` |
+| Field | Stage (PUSH_A_PREBIND / FINAL_BOUND) | Value |
+|---|---|---|
+| `acceptance_stage` | — | `PUSH_A_PREBIND` (then `FINAL_BOUND` after Push B) |
+| `installed_skill_self_contained` | both | `true` |
+| `portable_only_install_pass` | both | `true` |
+| `installed_resolver_invoked` | both | `true` |
+| `installed_doctor_invoked` | both | `true` |
+| `runtime_ready_pass` | both | `true` |
+| `managed_runtime_only` | both | `true` |
+| `user_override_never_executable` | both | `true` |
+| `resolver_doctor_truth_consistent` | both | `true` |
+| `wrong_repo_no_mutation_pass` | both | `true` |
+| `tracked_runtime_dirty_detection_pass` | both | `true` |
+| `portable_zip_built` | both | `true` |
+| `portable_zip_sha256` | both | `2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b` |
+| `portable_zip_size_bytes` | both | `42276` |
+| `portable_zip_internal_manifest_pass` | both | `true` |
+| `portable_zip_internal_shasums_pass` | both | `true` |
+| `reproducible_build_local_pass` | both | `true` |
+| `cross_platform_zip_sha_equal` | deferred (A) / required true (B) | `NOT_EVALUATED_PENDING_PUSH_A` (A) / `true` (B) |
+| `evidence_commit` | deferred (A) / required string (B) | `NOT_EVALUATED_PENDING_PUSH_A` (A) / actual SHA (B) |
+| `linux_ci.run_id` / `status` / `rebuilt_zip_sha256` / `portable_only_install_pass` / `runtime_ready_pass` | deferred (A) / required concrete (B) | bound in Push B |
+| `windows_ci.*` | same as linux_ci.* | bound in Push B |
+| `codex_install_layout_pass` | both | `true` |
+| `codex_discovery_smoke_status` | both | `NOT_EVALUATED_BY_CI` |
+| `live_scientific_search_executed` | both | `false` |
+| `cqc_production_modified` | both | `false` |
+| `mafs_production_modified` | both | `false` |
+| `repository_integration_path` | both | `PATH_C` |
+| `governance_deviation_recorded` | both | `true` |
+
+`verify_delivery.py` enforces the stage discipline: a `PUSH_A_PREBIND`
+commit may carry `NOT_EVALUATED_PENDING_PUSH_A` only on the explicit
+whitelist above (CI-evidence fields + the cross-platform equality
+field + Push-A identity). Any other field carrying a PENDING marker
+remains a hard failure. A `FINAL_BOUND` commit must have every
+CI-evidence field concretely bound and `true`.
 
 ## K. Governance deviation record (RA1 §2)
 

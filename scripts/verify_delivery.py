@@ -1,21 +1,30 @@
 #!/usr/bin/env python
-"""MAFS Skill 1.0 — fail-closed delivery acceptance gate (RA1 §21).
+"""MAFS Skill 1.0 — fail-closed delivery acceptance gate (RA1 §21,
+HO+ChatGPT Push-A remediation).
 
 This script does NOT claim PASS for anything it cannot mechanically
 verify. Where evidence is absent, it emits `NOT_EVALUATED`. It returns
 non-zero exit when any REQUIRED acceptance field is false or not
 evaluated.
 
-Required machine evidence:
-  - docs/MAFS_SKILL_1_0_DELIVERY_RA1_METRICS.json
-  - dist/MAFS_Skill_1.0.0_Portable.zip (must exist)
-  - dist/MAFS_Skill_1.0.0_Portable.zip.sha256 (must match the file)
+Acceptance stages (HO+ChatGPT authorized remediation, 2026-09-02):
+  PUSH_A_PREBIND  - the implementation commit, before CI evidence
+                     is available. Only CI-evidence fields that
+                     cannot exist until Push A has run may carry
+                     `NOT_EVALUATED_PENDING_PUSH_A`. All other
+                     product/runtime fields remain fail-closed.
+  FINAL_BOUND     - the bound stage (Push B). All CI-evidence
+                     fields must be concretely bound and PASS.
 
-Plus structural checks it can perform locally.
+The deferred surface (PUSH_A_PREBIND only) is narrowly limited to:
+  - linux_ci evidence fields
+  - windows_ci evidence fields
+  - cross_platform_zip_sha_equal
+  - external CI run identity fields (Push A evidence commit /
+    Push A CI run id)
 
-It does NOT call git, NOT hit the network, NOT verify CQC / MAFS
-integrity directly. It only reads the metrics file and the local
-package artifacts and emits a verdict.
+Any other false, missing, arbitrary string, or NOT_EVALUATED
+field remains a hard failure at every stage.
 """
 from __future__ import annotations
 
@@ -33,6 +42,33 @@ DIST = PKG / "dist"
 SHASUMS_INTERNAL = PKG / "release" / "SHA256SUMS.txt"
 MANIFEST = PKG / "release" / "DELIVERY_MANIFEST.json"
 
+# Stages
+STAGE_PUSH_A_PREBIND = "PUSH_A_PREBIND"
+STAGE_FINAL_BOUND = "FINAL_BOUND"
+PENDING_MARKER = "NOT_EVALUATED_PENDING_PUSH_A"
+
+# Fields allowed to carry PENDING_MARKER during PUSH_A_PREBIND.
+# Any other field carrying PENDING_MARKER (or any other non-bool
+# string) is a hard failure.
+PUSH_A_DEFERRED_FIELDS = {
+    # External CI run identity
+    "evidence_commit",
+    # Cross-platform equality
+    "cross_platform_zip_sha_equal",
+    # Linux CI evidence (nested)
+    "linux_ci.run_id",
+    "linux_ci.status",
+    "linux_ci.rebuilt_zip_sha256",
+    "linux_ci.portable_only_install_pass",
+    "linux_ci.runtime_ready_pass",
+    # Windows CI evidence (nested)
+    "windows_ci.run_id",
+    "windows_ci.status",
+    "windows_ci.rebuilt_zip_sha256",
+    "windows_ci.portable_only_install_pass",
+    "windows_ci.runtime_ready_pass",
+}
+
 
 def file_sha256(p: Path) -> str:
     h = hashlib.sha256()
@@ -41,8 +77,7 @@ def file_sha256(p: Path) -> str:
 
 
 def derive_local() -> dict:
-    """Derive what we can from the local package alone. Anything we
-    cannot verify is reported as NOT_EVALUATED."""
+    """Derive what we can from the local package alone."""
     version = "1.0.0"
     zip_path = DIST / f"MAFS_Skill_{version}_Portable.zip"
     sha256_path = DIST / f"MAFS_Skill_{version}_Portable.zip.sha256"
@@ -60,7 +95,6 @@ def derive_local() -> dict:
         "external_zip_sha256_present": sha256_path.is_file(),
         "external_zip_sha256_matches": False,
     }
-
     if zip_path.is_file():
         out["portable_zip_sha256"] = file_sha256(zip_path)
         out["portable_zip_size_bytes"] = zip_path.stat().st_size
@@ -72,46 +106,99 @@ def derive_local() -> dict:
         out["portable_zip_internal_shasums_present"] = (
             "mafs-skill/release/SHA256SUMS.txt" in names
         )
-
     if out["external_zip_sha256_present"] and out["portable_zip_built"]:
         text = sha256_path.read_text(encoding="utf-8").strip()
         m = re.match(r"^([a-f0-9]{64})\s", text)
         if m:
             out["external_zip_sha256_matches"] = m.group(1) == out["portable_zip_sha256"]
-
     return out
 
 
 def load_metrics() -> dict:
     if not METRICS.is_file():
-        return {
-            "_missing": True,
-            "error": f"metrics file not present: {METRICS}",
-        }
+        return {"_missing": True,
+                "error": f"metrics file not present: {METRICS}"}
     return json.loads(METRICS.read_text(encoding="utf-8"))
 
 
-def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
-    """Return (exit_code, verdict).
+def _get(metrics: dict, dotted: str):
+    """Get a value from metrics, supporting dotted nested paths."""
+    parts = dotted.split(".")
+    cur = metrics
+    for p in parts:
+        if not isinstance(cur, dict) or p not in cur:
+            return None
+        cur = cur[p]
+    return cur
 
-    The verdict includes:
-      - `derived_*` from the local package
-      - `metrics_*` from RA1 metrics file
-      - `not_evaluated` list of fields the deliverer did not provide
-      - `failing` list of REQUIRED fields that are false
-      - `passing` list of REQUIRED fields that are true
+
+def _classify_metric(name: str, v, metrics: dict, stage: str,
+                     in_passing: list, in_failing: list,
+                     in_not_evaluated: list) -> None:
+    """Classify a single metric field per the stage rules.
+
+    The polarity note from the contract: most fields are "this
+    happened" (true = pass). A handful are "this was avoided" (false
+    = pass); a true value for those means we broke a contract
+    invariant.
     """
+    NEGATIVE = {
+        "cqc_production_modified",
+        "mafs_production_modified",
+        "live_scientific_search_executed",
+    }
+
+    if name in NEGATIVE:
+        if v is False:
+            in_passing.append(name)
+        elif v is True:
+            in_failing.append(name)
+        else:
+            if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
+                in_not_evaluated.append(name)
+            else:
+                in_failing.append(name)
+        return
+
+    # positive polarity
+    if v is True:
+        in_passing.append(name)
+    elif v is False:
+        in_failing.append(name)
+    else:
+        # non-boolean value: must be a NOT_EVALUATED marker
+        if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
+            # In PUSH_A_PREBIND, this marker is acceptable only on
+            # the explicit whitelist of CI-evidence fields.
+            if stage == STAGE_PUSH_A_PREBIND and name in PUSH_A_DEFERRED_FIELDS:
+                in_not_evaluated.append(name)
+            elif stage == STAGE_PUSH_A_PREBIND:
+                # marker on a non-deferred field is still a hard
+                # failure — it means the deliverer marked a
+                # testable product/runtime invariant as not-evaluated
+                in_failing.append(name)
+            else:  # FINAL_BOUND
+                # In FINAL_BOUND, all CI-evidence must be concrete.
+                in_failing.append(name)
+        else:
+            # arbitrary string: hard failure at every stage
+            in_failing.append(name)
+
+
+def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
     verdict: dict = {
         "schema_version": "mafs-skill-delivery-verify.v1",
         "derived": derived,
         "metrics": {} if metrics.get("_missing") else metrics,
+        "acceptance_stage": None,
         "not_evaluated": [],
         "failing": [],
         "passing": [],
     }
 
-    # Required local (derivable) fields
-    required_derivable = [
+    # Required local (derivable) fields — these have no PUSH_A
+    # deferral: they MUST be present and true on every push.
+    for name, ok in [
         ("portable_zip_built", derived["portable_zip_built"]),
         ("portable_zip_internal_manifest_present",
          derived["portable_zip_internal_manifest_present"]),
@@ -119,87 +206,99 @@ def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
          derived["portable_zip_internal_shasums_present"]),
         ("external_zip_sha256_present", derived["external_zip_sha256_present"]),
         ("external_zip_sha256_matches", derived["external_zip_sha256_matches"]),
-    ]
-    for name, ok in required_derivable:
+    ]:
         if ok:
             verdict["passing"].append(name)
         else:
             verdict["failing"].append(name)
 
-    # Required metrics fields (from RA1 §22 machine-truth model)
     if metrics.get("_missing"):
-        verdict["not_evaluated"].append("metrics_file")
+        verdict["failing"].append("metrics_file")
+        return 1, verdict
+
+    # Stage detection
+    stage = metrics.get("acceptance_stage")
+    if stage not in (STAGE_PUSH_A_PREBIND, STAGE_FINAL_BOUND):
+        verdict["failing"].append("acceptance_stage")
+        return 1, verdict
+    verdict["acceptance_stage"] = stage
+
+    # Top-level RA1 §22 machine truth model fields
+    positive_metrics = [
+        "installed_skill_self_contained",
+        "portable_only_install_pass",
+        "installed_resolver_invoked",
+        "installed_doctor_invoked",
+        "runtime_ready_pass",
+        "managed_runtime_only",
+        "user_override_never_executable",
+        "resolver_doctor_truth_consistent",
+        "wrong_repo_no_mutation_pass",
+        "tracked_runtime_dirty_detection_pass",
+        "portable_zip_built",
+        "reproducible_build_local_pass",
+        "cross_platform_zip_sha_equal",
+        "codex_install_layout_pass",
+        "governance_deviation_recorded",
+        "evidence_commit",
+    ]
+    negative_metrics = [
+        "cqc_production_modified",
+        "mafs_production_modified",
+        "live_scientific_search_executed",
+    ]
+    for name in positive_metrics + negative_metrics:
+        if name not in metrics:
+            verdict["failing"].append(name)
+            continue
+        _classify_metric(name, metrics[name], metrics, stage,
+                         verdict["passing"], verdict["failing"],
+                         verdict["not_evaluated"])
+
+    # codex_discovery_smoke_status — always NOT_EVALUATED_BY_CI is acceptable
+    dsm = metrics.get("codex_discovery_smoke_status")
+    if dsm == "NOT_EVALUATED_BY_CI":
+        verdict["passing"].append("codex_discovery_smoke_status")
+    elif dsm is True:
+        verdict["passing"].append("codex_discovery_smoke_status")
     else:
-        # Each REQUIRED field from §22 must be present and either true
-        # or a known not-evaluated marker.
-        # Polarity note: most fields are "this happened" (true = pass).
-        # A handful are "this was avoided" (false = pass): a true value
-        # for those means we broke a contract invariant.
-        positive_metrics = [
-            "installed_skill_self_contained",
-            "portable_only_install_pass",
-            "installed_resolver_invoked",
-            "installed_doctor_invoked",
-            "runtime_ready_pass",
-            "managed_runtime_only",
-            "user_override_never_executable",
-            "resolver_doctor_truth_consistent",
-            "wrong_repo_no_mutation_pass",
-            "tracked_runtime_dirty_detection_pass",
-            "portable_zip_built",
-            "reproducible_build_local_pass",
-            "cross_platform_zip_sha_equal",
-            "codex_install_layout_pass",
-            "governance_deviation_recorded",
-        ]
-        negative_metrics = [
-            # The Skill MUST NOT have modified upstream production
-            # repos. true => we modified production => contract violation.
-            "cqc_production_modified",
-            "mafs_production_modified",
-            "live_scientific_search_executed",
-        ]
-        for name in positive_metrics:
-            if name not in metrics:
-                verdict["not_evaluated"].append(name)
-                continue
-            v = metrics[name]
-            if v is True:
-                verdict["passing"].append(name)
-            elif v is False:
-                verdict["failing"].append(name)
-            else:
-                if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
-                    verdict["not_evaluated"].append(name)
-                else:
-                    verdict["failing"].append(name)
-        for name in negative_metrics:
-            if name not in metrics:
-                verdict["not_evaluated"].append(name)
-                continue
-            v = metrics[name]
-            if v is False:
-                verdict["passing"].append(name)
-            elif v is True:
-                verdict["failing"].append(name)
-            else:
-                if isinstance(v, str) and v.startswith("NOT_EVALUATED"):
-                    verdict["not_evaluated"].append(name)
-                else:
-                    verdict["failing"].append(name)
+        verdict["failing"].append("codex_discovery_smoke_status")
 
-        # codex_discovery_smoke_status must be NOT_EVALUATED_BY_CI or true
-        dsm = metrics.get("codex_discovery_smoke_status")
-        if dsm == "NOT_EVALUATED_BY_CI":
-            verdict["passing"].append("codex_discovery_smoke_status")
-        elif dsm is True:
-            verdict["passing"].append("codex_discovery_smoke_status")
-        else:
-            verdict["failing"].append("codex_discovery_smoke_status")
+    # Nested linux_ci / windows_ci evidence
+    for os_name in ("linux_ci", "windows_ci"):
+        sub = metrics.get(os_name) or {}
+        for field in ("run_id", "status", "rebuilt_zip_sha256",
+                      "portable_only_install_pass", "runtime_ready_pass"):
+            dotted = f"{os_name}.{field}"
+            v = sub.get(field) if isinstance(sub, dict) else None
+            if v is None:
+                # Missing entirely
+                if stage == STAGE_PUSH_A_PREBIND and dotted in PUSH_A_DEFERRED_FIELDS:
+                    verdict["not_evaluated"].append(dotted)
+                else:
+                    verdict["failing"].append(dotted)
+                continue
+            _classify_metric(dotted, v, metrics, stage,
+                             verdict["passing"], verdict["failing"],
+                             verdict["not_evaluated"])
 
-    # Exit code: 0 only if all REQUIRED derivable fields pass AND no
-    # REQUIRED metrics field is unevaluated or failing.
-    if verdict["failing"] or verdict["not_evaluated"]:
+    if verdict["failing"]:
+        return 1, verdict
+    # In PUSH_A_PREBIND, the only acceptable not_evaluated entries
+    # are fields in PUSH_A_DEFERRED_FIELDS (CI evidence not yet
+    # available). Any other not_evaluated field is a hard fail.
+    if verdict["not_evaluated"]:
+        if stage == STAGE_PUSH_A_PREBIND:
+            allowed = set(PUSH_A_DEFERRED_FIELDS)
+            for f in verdict["not_evaluated"]:
+                if f not in allowed:
+                    verdict["failing"].append(
+                        f"{f} (not deferred in PUSH_A_PREBIND)"
+                    )
+            if verdict["failing"]:
+                return 1, verdict
+            return 0, verdict
+        # FINAL_BOUND: every field must be concretely bound.
         return 1, verdict
     return 0, verdict
 
@@ -208,11 +307,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
-
     derived = derive_local()
     metrics = load_metrics()
     rc, verdict = evaluate(derived, metrics)
-
     if args.json:
         print(json.dumps(verdict, indent=2, ensure_ascii=False))
     else:
@@ -220,6 +317,7 @@ def main(argv=None) -> int:
             print(f"--- {k} ---")
             for f in verdict[k]:
                 print(f"  {f}")
+        print(f"acceptance_stage: {verdict.get('acceptance_stage')}")
         if rc == 0:
             print("VERDICT: PASS")
         else:

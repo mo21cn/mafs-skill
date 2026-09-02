@@ -129,6 +129,91 @@ class TestVerifyFailClosed(unittest.TestCase):
         self.assertTrue(len(r.stdout) > 0)
 
 
+class TestAcceptanceStage(unittest.TestCase):
+    """T10: PUSH_A_PREBIND allows whitelisted CI-evidence fields as
+    NOT_EVALUATED_PENDING_PUSH_A, but rejects NOT_EVALUATED markers
+    on any other field."""
+
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="ra1_stage_"))
+        if RA1_METRICS.is_file():
+            self._backup = RA1_METRICS.read_bytes()
+        else:
+            self._backup = None
+
+    def tearDown(self) -> None:
+        if self._backup is not None:
+            RA1_METRICS.write_bytes(self._backup)
+        elif RA1_METRICS.is_file():
+            RA1_METRICS.unlink()
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _write_metrics(self, payload: dict) -> None:
+        RA1_METRICS.parent.mkdir(parents=True, exist_ok=True)
+        RA1_METRICS.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    def test_push_a_prebind_passes_with_deferred_ci_fields(self) -> None:
+        """PUSH_A_PREBIND with all product/runtime facts true and
+        whitelisted CI fields marked PENDING must PASS."""
+        build_release.build_zip("1.0.0")
+        payload = _minimal_metrics()
+        payload["acceptance_stage"] = "PUSH_A_PREBIND"
+        payload["evidence_commit"] = "NOT_EVALUATED_PENDING_PUSH_A"
+        payload["cross_platform_zip_sha_equal"] = "NOT_EVALUATED_PENDING_PUSH_A"
+        payload["linux_ci"] = {
+            "run_id": "NOT_EVALUATED_PENDING_PUSH_A",
+            "status": "NOT_EVALUATED_PENDING_PUSH_A",
+            "rebuilt_zip_sha256": "NOT_EVALUATED_PENDING_PUSH_A",
+            "portable_only_install_pass": "NOT_EVALUATED_PENDING_PUSH_A",
+            "runtime_ready_pass": "NOT_EVALUATED_PENDING_PUSH_A",
+        }
+        payload["windows_ci"] = {k: "NOT_EVALUATED_PENDING_PUSH_A" for k in payload["linux_ci"]}
+        self._write_metrics(payload)
+        r = subprocess.run(
+            [sys.executable, str(PKG / "scripts" / "verify_delivery.py")],
+            cwd=str(PKG), capture_output=True, text=True, timeout=15,
+        )
+        self.assertEqual(r.returncode, 0,
+                         f"PUSH_A_PREBIND should PASS; got: {r.stdout}\nstderr: {r.stderr}")
+        self.assertIn("VERDICT: PASS", r.stdout)
+
+    def test_push_a_prebind_rejects_pending_on_non_deferred_field(self) -> None:
+        """PUSH_A_PREBIND must reject a PENDING marker on a
+        product/runtime field (only CI evidence is deferred)."""
+        build_release.build_zip("1.0.0")
+        payload = _minimal_metrics()
+        payload["acceptance_stage"] = "PUSH_A_PREBIND"
+        payload["evidence_commit"] = "NOT_EVALUATED_PENDING_PUSH_A"
+        # runtime_ready_pass is NOT in the deferred whitelist
+        payload["runtime_ready_pass"] = "NOT_EVALUATED_PENDING_PUSH_A"
+        self._write_metrics(payload)
+        r = subprocess.run(
+            [sys.executable, str(PKG / "scripts" / "verify_delivery.py")],
+            cwd=str(PKG), capture_output=True, text=True, timeout=15,
+        )
+        self.assertNotEqual(r.returncode, 0,
+                            "PENDING on a non-deferred field must FAIL")
+        self.assertIn("runtime_ready_pass", r.stdout)
+        self.assertIn("VERDICT: FAIL", r.stdout)
+
+    def test_final_bound_rejects_pending_marker_anywhere(self) -> None:
+        """FINAL_BOUND: any PENDING marker is a hard failure."""
+        build_release.build_zip("1.0.0")
+        payload = _minimal_metrics()
+        payload["acceptance_stage"] = "FINAL_BOUND"
+        # cross_platform is whitelisted in PUSH_A_PREBIND but in
+        # FINAL_BOUND it must be concretely true.
+        payload["cross_platform_zip_sha_equal"] = "NOT_EVALUATED_PENDING_PUSH_A"
+        self._write_metrics(payload)
+        r = subprocess.run(
+            [sys.executable, str(PKG / "scripts" / "verify_delivery.py")],
+            cwd=str(PKG), capture_output=True, text=True, timeout=15,
+        )
+        self.assertNotEqual(r.returncode, 0,
+                            "FINAL_BOUND with PENDING marker must FAIL")
+        self.assertIn("VERDICT: FAIL", r.stdout)
+
+
 class TestCodexDiscoveryDryRun(unittest.TestCase):
     def test_t9_dry_run_does_not_claim_discovery(self) -> None:
         """T9: dry-run install must not produce codex_discovery_smoke_pass=true.

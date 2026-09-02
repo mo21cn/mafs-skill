@@ -1,8 +1,9 @@
 {
-  "schema_version": "mafs-skill-delivery-ra1-metrics.v1",
+  "schema_version": "mafs-skill-delivery-ra1-metrics.v2",
+  "acceptance_stage": "PUSH_A_PREBIND",
   "product": "MAFS Skill 1.0",
   "version": "1.0.0",
-  "evidence_commit": "PENDING_PUSH_A",
+  "evidence_commit": "NOT_EVALUATED_PENDING_PUSH_A",
   "cqc_pin": "b34a12295bb4522ff027724630f244f2438c19e6",
   "mafs_pin": "cd09699fc8cc160ab5cfff00a41e714961dd2109",
   "installed_skill_self_contained": true,
@@ -21,21 +22,21 @@
   "portable_zip_internal_manifest_pass": true,
   "portable_zip_internal_shasums_pass": true,
   "reproducible_build_local_pass": true,
+  "cross_platform_zip_sha_equal": "NOT_EVALUATED_PENDING_PUSH_A",
   "linux_ci": {
-    "run_id": "PENDING_PUSH_A",
-    "status": "PENDING_PUSH_A",
-    "rebuilt_zip_sha256": "PENDING_PUSH_A",
-    "portable_only_install_pass": "PENDING_PUSH_A",
-    "runtime_ready_pass": "PENDING_PUSH_A"
+    "run_id": "NOT_EVALUATED_PENDING_PUSH_A",
+    "status": "NOT_EVALUATED_PENDING_PUSH_A",
+    "rebuilt_zip_sha256": "NOT_EVALUATED_PENDING_PUSH_A",
+    "portable_only_install_pass": "NOT_EVALUATED_PENDING_PUSH_A",
+    "runtime_ready_pass": "NOT_EVALUATED_PENDING_PUSH_A"
   },
   "windows_ci": {
-    "run_id": "PENDING_PUSH_A",
-    "status": "PENDING_PUSH_A",
-    "rebuilt_zip_sha256": "PENDING_PUSH_A",
-    "portable_only_install_pass": "PENDING_PUSH_A",
-    "runtime_ready_pass": "PENDING_PUSH_A"
+    "run_id": "NOT_EVALUATED_PENDING_PUSH_A",
+    "status": "NOT_EVALUATED_PENDING_PUSH_A",
+    "rebuilt_zip_sha256": "NOT_EVALUATED_PENDING_PUSH_A",
+    "portable_only_install_pass": "NOT_EVALUATED_PENDING_PUSH_A",
+    "runtime_ready_pass": "NOT_EVALUATED_PENDING_PUSH_A"
   },
-  "cross_platform_zip_sha_equal": "PENDING_PUSH_A",
   "codex_install_layout_pass": true,
   "codex_discovery_smoke_status": "NOT_EVALUATED_BY_CI",
   "live_scientific_search_executed": false,
