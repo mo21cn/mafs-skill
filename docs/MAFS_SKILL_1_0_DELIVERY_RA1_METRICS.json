@@ -1,9 +1,9 @@
 {
-  "schema_version": "mafs-skill-delivery-ra1-metrics.v3",
-  "acceptance_stage": "PUSH_A_PREBIND",
+  "schema_version": "mafs-skill-delivery-ra1-metrics.v4",
+  "acceptance_stage": "FINAL_BOUND",
   "product": "MAFS Skill 1.0",
   "version": "1.0.0",
-  "evidence_commit": "NOT_EVALUATED_PENDING_PUSH_A",
+  "evidence_commit": "1d5099acad2350aef6864da3c5a04174ef43f8f1",
   "cqc_pin": "b34a12295bb4522ff027724630f244f2438c19e6",
   "mafs_pin": "cd09699fc8cc160ab5cfff00a41e714961dd2109",
   "installed_skill_self_contained": true,
@@ -17,25 +17,25 @@
   "wrong_repo_no_mutation_pass": true,
   "tracked_runtime_dirty_detection_pass": true,
   "portable_zip_built": true,
-  "portable_zip_sha256": "421e2ab53720299c24aedd26ef5d363c7ed52dd2e4d546abd73d6419c250d7a7",
-  "portable_zip_size_bytes": 19460,
+  "portable_zip_sha256": "e6292b251f4bb187ff40e4b36e4cbf9d49f09b3ab30c56d1972fe8199dd18b71",
+  "portable_zip_size_bytes": 31326,
   "portable_zip_internal_manifest_pass": true,
   "portable_zip_internal_shasums_pass": true,
   "reproducible_build_local_pass": true,
-  "cross_platform_zip_sha_equal": "NOT_EVALUATED_PENDING_PUSH_A",
+  "cross_platform_zip_sha_equal": true,
   "linux_ci": {
-    "run_id": "NOT_EVALUATED_PENDING_PUSH_A",
-    "status": "NOT_EVALUATED_PENDING_PUSH_A",
-    "rebuilt_zip_sha256": "NOT_EVALUATED_PENDING_PUSH_A",
-    "portable_only_install_pass": "NOT_EVALUATED_PENDING_PUSH_A",
-    "runtime_ready_pass": "NOT_EVALUATED_PENDING_PUSH_A"
+    "run_id": "33602712321",
+    "status": "success",
+    "rebuilt_zip_sha256": "e6292b251f4bb187ff40e4b36e4cbf9d49f09b3ab30c56d1972fe8199dd18b71",
+    "portable_only_install_pass": true,
+    "runtime_ready_pass": true
   },
   "windows_ci": {
-    "run_id": "NOT_EVALUATED_PENDING_PUSH_A",
-    "status": "NOT_EVALUATED_PENDING_PUSH_A",
-    "rebuilt_zip_sha256": "NOT_EVALUATED_PENDING_PUSH_A",
-    "portable_only_install_pass": "NOT_EVALUATED_PENDING_PUSH_A",
-    "runtime_ready_pass": "NOT_EVALUATED_PENDING_PUSH_A"
+    "run_id": "33602712321",
+    "status": "success",
+    "rebuilt_zip_sha256": "e6292b251f4bb187ff40e4b36e4cbf9d49f09b3ab30c56d1972fe8199dd18b71",
+    "portable_only_install_pass": true,
+    "runtime_ready_pass": true
   },
   "codex_install_layout_pass": true,
   "codex_discovery_smoke_status": "NOT_EVALUATED_BY_CI",
@@ -44,5 +44,5 @@
   "mafs_production_modified": false,
   "repository_integration_path": "PATH_C",
   "governance_deviation_recorded": true,
-  "_removal_of_pyc_pollution_note": "build_release.py now excludes __pycache__/, *.pyc, *.pyo, *.pyd from the source walk. The portable ZIP is now genuinely cross-platform reproducible (different Python builds produce the same SHA). Local byte-identical reproduction verified. The cross-platform equality will be verified by the CI run on this push."
+  "_binding_notes": "Push B binds all CI-evidence fields. canonical SHA == linux_ci.rebuilt_zip_sha256 == windows_ci.rebuilt_zip_sha256 == local reproduction SHA. cross_platform_zip_sha_equal = true."
 }

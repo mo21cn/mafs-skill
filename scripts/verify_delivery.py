@@ -223,6 +223,11 @@ def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
         return 1, verdict
     verdict["acceptance_stage"] = stage
 
+    # String-typed fields where any concrete (non-PENDING) string
+    # is a PASS. They appear in positive_metrics but must not be
+    # classified with the boolean polarity.
+    STRING_TYPED_FIELDS = {"evidence_commit"}
+
     # Top-level RA1 §22 machine truth model fields
     positive_metrics = [
         "installed_skill_self_contained",
@@ -251,6 +256,17 @@ def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
         if name not in metrics:
             verdict["failing"].append(name)
             continue
+        if name in STRING_TYPED_FIELDS:
+            v = metrics[name]
+            if isinstance(v, str):
+                if v.startswith("NOT_EVALUATED") and stage == STAGE_PUSH_A_PREBIND \
+                        and name in PUSH_A_DEFERRED_FIELDS:
+                    verdict["not_evaluated"].append(name)
+                else:
+                    verdict["passing"].append(name)
+            else:
+                verdict["failing"].append(name)
+            continue
         _classify_metric(name, metrics[name], metrics, stage,
                          verdict["passing"], verdict["failing"],
                          verdict["not_evaluated"])
@@ -264,11 +280,18 @@ def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
     else:
         verdict["failing"].append("codex_discovery_smoke_status")
 
-    # Nested linux_ci / windows_ci evidence
+    # Nested linux_ci / windows_ci evidence. These fields have
+    # mixed types: run_id and rebuilt_zip_sha256 are strings;
+    # status, portable_only_install_pass, runtime_ready_pass
+    # are booleans. The verifier accepts any concrete value in
+    # FINAL_BOUND; only PENDING_PUSH_A markers are allowed on
+    # these fields in PUSH_A_PREBIND.
+    CI_STRING_FIELDS = {"run_id", "status", "rebuilt_zip_sha256"}
+    CI_BOOL_FIELDS = {"portable_only_install_pass", "runtime_ready_pass"}
     for os_name in ("linux_ci", "windows_ci"):
         sub = metrics.get(os_name) or {}
-        for field in ("run_id", "status", "rebuilt_zip_sha256",
-                      "portable_only_install_pass", "runtime_ready_pass"):
+        all_fields = CI_STRING_FIELDS | CI_BOOL_FIELDS
+        for field in all_fields:
             dotted = f"{os_name}.{field}"
             v = sub.get(field) if isinstance(sub, dict) else None
             if v is None:
@@ -278,9 +301,24 @@ def evaluate(derived: dict, metrics: dict) -> tuple[int, dict]:
                 else:
                     verdict["failing"].append(dotted)
                 continue
-            _classify_metric(dotted, v, metrics, stage,
-                             verdict["passing"], verdict["failing"],
-                             verdict["not_evaluated"])
+            if field in CI_STRING_FIELDS:
+                # String field: any concrete (non-PENDING) string is PASS
+                if isinstance(v, str):
+                    if v.startswith("NOT_EVALUATED") and stage == STAGE_PUSH_A_PREBIND:
+                        if dotted in PUSH_A_DEFERRED_FIELDS:
+                            verdict["not_evaluated"].append(dotted)
+                        else:
+                            verdict["failing"].append(dotted)
+                    else:
+                        verdict["passing"].append(dotted)
+                else:
+                    # non-string for a string field
+                    verdict["failing"].append(dotted)
+            else:
+                # Boolean field
+                _classify_metric(dotted, v, metrics, stage,
+                                 verdict["passing"], verdict["failing"],
+                                 verdict["not_evaluated"])
 
     if verdict["failing"]:
         return 1, verdict
