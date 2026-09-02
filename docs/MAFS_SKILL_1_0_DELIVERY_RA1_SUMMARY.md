@@ -145,26 +145,52 @@ Size: **42,276 bytes** (machine bytes, not human-readable rounding).
 
 ## H. Linux / Windows CI evidence (RA1 §18, §19, §20)
 
-Status: **PENDING_PUSH_A**.
-
-After Push A, the `delivery-ci` workflow runs on both `ubuntu-latest`
-and `windows-latest` and must:
-
 ```text
-A. build deterministic portable zip
-B. verify canonical zip SHA
-C. copy zip into isolated temp location
-D. extract portable zip
-E. run install.py from extracted portable package
-F. invoke installed Skill resolver
-G. automatically materialize real pinned CQC + MAFS from GitHub
-H. invoke installed Skill doctor
-I. require RUNTIME_READY
-J. run unit / regression tests
+delivery-ci run 33585474656
+  - delivery (ubuntu-latest)   in 24s   success
+  - delivery (windows-latest)  in 24s   success
 ```
 
-All three ZIP SHAs (canonical + Ubuntu rebuilt + Windows rebuilt)
-must be identical. If any differ → `REPRODUCIBILITY_FAILURE → CI FAIL`.
+All 11 substantive steps PASS on both platforms (build → install →
+resolver materialize → doctor RUNTIME_READY → verify_delivery → tests).
+
+### Cross-platform reproducibility finding (recorded honestly)
+
+The committed canonical SHA, the local reproduction SHA, and the
+two CI rebuilt SHAs are four distinct values:
+
+```text
+canonical (committed):   2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b
+local reproduction:      2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b  (matches canonical)
+windows CI rebuild:     bb9e9c2ab853849c1c958ac7f0011f23204bfb0eef4d48a925ce17d7d69cbef2
+ubuntu CI rebuild:      e6292b251f4bb187ff40e4b36e4cbf9d49f09b3ab30c56d1972fe8199dd18b71
+```
+
+Local reproducibility (two consecutive local builds) PASSES.
+Cross-platform reproducibility FAILS.
+
+### Root cause
+
+The portable ZIP includes `__pycache__/*.pyc` files written to
+the working tree when Python imports the installed scripts during
+the CI install / verify step. Different Python builds (Linux
+CPython 3.11.16 vs Windows CPython 3.11.9) produce different
+cpython-3X bytecode, which changes the ZIP SHA. The `.pyc` files
+are gitignored but exist in the working tree at ZIP build time
+and are walked by `build_release.py`.
+
+### Resolution status
+
+`build_release.py` is in the do-not-modify list per the
+HO+ChatGPT second bounded CI remediation authorization. A fix
+that excludes `__pycache__/` from the source walk is a one-line
+change but is not in scope for this Push B. The metrics file
+records `cross_platform_zip_sha_equal: false` and includes a
+`_push_b_evidence_notes` section explaining the cause.
+
+Local-only reproducibility is asserted via
+`reproducible_build_local_pass: true` (verified by
+`tests/test_ra1_zip_reproducible.py::test_t11_repeated_local_build_same_sha`).
 
 ## I. User-repo no-mutation evidence (RA1 §9, §13)
 
@@ -181,43 +207,57 @@ the top of this document. The v0 metrics and summary files are
 preserved as governance audit trail only and carry explicit
 `SUPERSEDED_BY_DELIVERY_RA1` markers.
 
-| Field | Stage (PUSH_A_PREBIND / FINAL_BOUND) | Value |
-|---|---|---|
-| `acceptance_stage` | — | `PUSH_A_PREBIND` (then `FINAL_BOUND` after Push B) |
-| `installed_skill_self_contained` | both | `true` |
-| `portable_only_install_pass` | both | `true` |
-| `installed_resolver_invoked` | both | `true` |
-| `installed_doctor_invoked` | both | `true` |
-| `runtime_ready_pass` | both | `true` |
-| `managed_runtime_only` | both | `true` |
-| `user_override_never_executable` | both | `true` |
-| `resolver_doctor_truth_consistent` | both | `true` |
-| `wrong_repo_no_mutation_pass` | both | `true` |
-| `tracked_runtime_dirty_detection_pass` | both | `true` |
-| `portable_zip_built` | both | `true` |
-| `portable_zip_sha256` | both | `2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b` |
-| `portable_zip_size_bytes` | both | `42276` |
-| `portable_zip_internal_manifest_pass` | both | `true` |
-| `portable_zip_internal_shasums_pass` | both | `true` |
-| `reproducible_build_local_pass` | both | `true` |
-| `cross_platform_zip_sha_equal` | deferred (A) / required true (B) | `NOT_EVALUATED_PENDING_PUSH_A` (A) / `true` (B) |
-| `evidence_commit` | deferred (A) / required string (B) | `NOT_EVALUATED_PENDING_PUSH_A` (A) / actual SHA (B) |
-| `linux_ci.run_id` / `status` / `rebuilt_zip_sha256` / `portable_only_install_pass` / `runtime_ready_pass` | deferred (A) / required concrete (B) | bound in Push B |
-| `windows_ci.*` | same as linux_ci.* | bound in Push B |
-| `codex_install_layout_pass` | both | `true` |
-| `codex_discovery_smoke_status` | both | `NOT_EVALUATED_BY_CI` |
-| `live_scientific_search_executed` | both | `false` |
-| `cqc_production_modified` | both | `false` |
-| `mafs_production_modified` | both | `false` |
-| `repository_integration_path` | both | `PATH_C` |
-| `governance_deviation_recorded` | both | `true` |
+| Field | FINAL_BOUND (Push B) Value |
+|---|---|
+| `acceptance_stage` | `FINAL_BOUND` |
+| `installed_skill_self_contained` | `true` |
+| `portable_only_install_pass` | `true` |
+| `installed_resolver_invoked` | `true` |
+| `installed_doctor_invoked` | `true` |
+| `runtime_ready_pass` | `true` |
+| `managed_runtime_only` | `true` |
+| `user_override_never_executable` | `true` |
+| `resolver_doctor_truth_consistent` | `true` |
+| `wrong_repo_no_mutation_pass` | `true` |
+| `tracked_runtime_dirty_detection_pass` | `true` |
+| `portable_zip_built` | `true` |
+| `portable_zip_sha256` | `2131b1501647f822972a4c5a9aa26ce10834807fccab2f782b2a6acb9e8a5f9b` |
+| `portable_zip_size_bytes` | `42276` |
+| `portable_zip_internal_manifest_pass` | `true` |
+| `portable_zip_internal_shasums_pass` | `true` |
+| `reproducible_build_local_pass` | `true` |
+| `cross_platform_zip_sha_equal` | `false` (see §H root cause) |
+| `evidence_commit` | `627afcad75689c44165544cca8deaccc2b54ef5a` (Push A remediation) |
+| `linux_ci.run_id` | `33585474656` |
+| `linux_ci.status` | `success` |
+| `linux_ci.rebuilt_zip_sha256` | `e6292b251f4bb187ff40e4b36e4cbf9d49f09b3ab30c56d1972fe8199dd18b71` |
+| `linux_ci.portable_only_install_pass` | `true` |
+| `linux_ci.runtime_ready_pass` | `true` |
+| `windows_ci.run_id` | `33585474656` |
+| `windows_ci.status` | `success` |
+| `windows_ci.rebuilt_zip_sha256` | `bb9e9c2ab853849c1c958ac7f0011f23204bfb0eef4d48a925ce17d7d69cbef2` |
+| `windows_ci.portable_only_install_pass` | `true` |
+| `windows_ci.runtime_ready_pass` | `true` |
+| `codex_install_layout_pass` | `true` |
+| `codex_discovery_smoke_status` | `NOT_EVALUATED_BY_CI` |
+| `live_scientific_search_executed` | `false` |
+| `cqc_production_modified` | `false` |
+| `mafs_production_modified` | `false` |
+| `repository_integration_path` | `PATH_C` |
+| `governance_deviation_recorded` | `true` |
 
 `verify_delivery.py` enforces the stage discipline: a `PUSH_A_PREBIND`
 commit may carry `NOT_EVALUATED_PENDING_PUSH_A` only on the explicit
 whitelist above (CI-evidence fields + the cross-platform equality
 field + Push-A identity). Any other field carrying a PENDING marker
 remains a hard failure. A `FINAL_BOUND` commit must have every
-CI-evidence field concretely bound and `true`.
+CI-evidence field concretely bound.
+
+In FINAL_BOUND, `cross_platform_zip_sha_equal: false` is the
+recorded state. The `verify_delivery.py` gate will report FAIL on
+that field. The metrics file's `_push_b_evidence_notes` documents
+the root cause (`.pyc` files in the ZIP). The resolution is
+deferred (build_release.py is in the do-not-modify list).
 
 ## K. Governance deviation record (RA1 §2)
 
@@ -275,17 +315,28 @@ The v0 delivery docs (`MAFS_SKILL_1_0_DELIVERY_SUMMARY.md`,
 ## N. Final RA1 status / Recommended next step
 
 ```text
-RA1 status:    READY_FOR_HO_CHATGPT_ACCEPTANCE   (after Push A CI is green)
-                 | RA_REQUIRED
+RA1 status:    RA_REQUIRED   (one open product issue remains)
                  | BLOCKED
 ```
 
-Push A evidence commit: **PENDING_PUSH_A**
-Push A CI run: **PENDING_PUSH_A**
-Push B closure commit: **NOT_REQUIRED** (only needed if Push A's CI
-evidence binding requires a follow-up commit per RA1 §31)
+Push A (initial) evidence commit: `0541a90ec29a1adbd9483a5f5ce52c4df3d984b9`
+Push A (remediation) evidence commit: `11b5853c171fb7d3e8703579218892af5b366b04`
+Push A (CI pattern) evidence commit: `627afcad75689c44165544cca8deaccc2b54ef5a`
+Push A CI run: `33585474656`  (ubuntu + windows both success)
+Push B evidence commit: **PENDING_PUSH_B** (this commit)
 
-Recommended next step: **`HO_REAL_SCENARIO_REPLAY`** (after Push A CI
-is green and HO+ChatGPT accept this delivery).
+The one open product issue is the cross-platform reproducibility
+gap (see §H): the committed portable ZIP and the two CI rebuilt
+ZIPs have different SHAs because the ZIP includes `__pycache__/*.pyc`
+files. Local reproducibility is verified; cross-platform is not.
+
+Push B is the final evidence-binding commit. It must NOT alter
+product/runtime bytes (per the second bounded CI remediation
+authorization).
+
+Recommended next step: **`HO_REAL_SCENARIO_REPLAY`** (after
+HO+ChatGPT accept this RA1 delivery) **or** **`DELIVERY_RA2`**
+(if a second RA cycle is needed to fix the `__pycache__/`
+exclusion in `build_release.py`).
 
 — Local Claw / Mavis
