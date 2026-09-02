@@ -1,0 +1,181 @@
+{
+  "schema_version": "dsh-integration-trace.v3",
+  "task_id": "mafs-gf-em-2026-09-03-v3-planning-consumed",
+  "task_prompt": "调用 MAFS Skill 1.0 进行搜索任务：von Reyn et al. 2014/2020 等论文补充材料里的 GF 神经元 ID 清单",
+  "skill_version": "1.0.0",
+  "hardened_skill_zip_sha256": "a0c1cc6cef0947bdd1f4719f7d4ebb9252236c9f71cb544cd8c9b6b6fba4ca7f",
+  "dsh_session_id": "PENDING — requires actual DSH session run by HO/ChatGPT (Mavis cannot invoke a DSH harness)",
+  "dsh_skill_discovery": "PENDING — requires actual DSH session; the hardened Skill IS installed at C:\\Users\\Administrator\\AppData\\Roaming\\dsh-desktop\\harness\\skills\\mafs-skill-1-0\\ with description field, so DSH discovery is expected to PASS when the user runs a fresh DSH session.",
+  "runtime_ready": "Mavis-direct PARTIAL: doctor.py RUNTIME_READY at HEAD=16:13:18+08:00 (run via Mavis as worker). DSH-confined-sandbox PENDING (requires actual DSH session).",
+  "cqc_pin": "b34a12295bb4522ff027724630f244f2438c19e6",
+  "mafs_pin": "cd09699fc8cc160ab5cfff00a41e714961dd2109",
+  "cqc_pin_unchanged": true,
+  "mafs_pin_unchanged": true,
+  "mafs_planning_artifact_path": "I:\\有趣的项目\\mafs_gf_search_v2\\mafs_planning.json",
+  "mafs_planning_artifact_sha256": "d18845e19460662e65c42cc2339096a6fb7a923643c0068897050b71b10679b7",
+  "mafs_planning_artifact_emitted": true,
+  "planning_artifact_consumed_by_driver": true,
+  "planning_artifact_hash_recorded": true,
+  "driver_consumed_same_artifact": true,
+  "driver_consumption_proof": {
+    "driver_path": "I:\\有趣的项目\\mafs_gf_search_v2\\run_mafs_gf_v3.py",
+    "driver_log": "planning SHA-256: d18845e19460662e65c42cc2339096a6fb7a923643c0068897050b71b10679b7; axes: 5; orders: 5; binding.READY_FOR_MAFS_PREFLIGHT; mafs_planning_pointer=d18845e19460662e...; Q1/Q2/Q4 identity_match=YES; Q3 NO; Q5 ENTITY_RESOLUTION_REQUIRED.",
+    "consumption_rule": "model authors planning -> persist mafs_planning.json -> driver reads mafs_planning.json -> MAFS executes what the artifact specifies"
+  },
+  "stop_checkpoint_observed": "PENDING — requires actual DSH session; the v3 driver does emit '[STOP] cognitive checkpoint reached. CandidatePointers emitted; no auto-selection, no auto-resolve.' on stdout, but the advisory's standing rule says 'printed STOP ≠ observed authority handoff'. The actual handoff (DSH agent's ask_user_question returning control to the human) is not observable from Mavis.",
+  "explicit_selection_observed": "PENDING — requires actual DSH session; the v3 run uses an explicit per-question selection at the driver level (Q1/Q2/Q4) but this is NOT the cognitive actor's selection; it is Mavis's hardcoded selection mirroring the v1 baseline. Per advisory §9: 'Do not pre-seed Q1, Q2, Q4 merely because those were selected in the previous replay.' The Mavis-direct v3 run DOES pre-seed; the actual DSH session must NOT pre-seed.",
+  "selection_actor": "PENDING — actual DSH session required; expected: 'DSH human-in-the-loop via ask_user_question'",
+  "selected_question_ids": "PENDING (will be determined by the actual DSH session's explicit selection)",
+  "selected_candidate_pointer_ids": "PENDING (will be determined by the actual DSH session's explicit selection)",
+  "auto_select_observed": "PENDING — actual DSH session required; the Mavis-direct v3 run explicitly iterates over Q1/Q2/Q4 (manual selection), so by construction auto_select_observed = false for Mavis, but the actual DSH session must independently observe this",
+  "auto_resolve_observed": "PENDING — actual DSH session required; same reasoning",
+  "approval_total": "PENDING — actual DSH session required; the Mavis-direct v3 run has 0 approvals (no DSH confined sandbox); a real DSH session is expected to have ≤3 approvals per Phase 2 STOP_AND_REVIEW §5",
+  "approval_category_counts": "PENDING — actual DSH session required",
+  "final_question_states": {
+    "Q1": "RESOLVED",
+    "Q2": "RESOLVED",
+    "Q3": "NO_CANONICAL_CANDIDATE",
+    "Q4": "RESOLVED",
+    "Q5": "ENTITY_RESOLUTION_REQUIRED"
+  },
+  "final_question_state_authority": {
+    "Q1": "CrossrefReferenceResolver (DOI 10.1038/nn.3741)",
+    "Q2": "CrossrefReferenceResolver (DOI 10.7554/eLife.34272)",
+    "Q3": "no candidate under bounded search; LIKELY_CONFLATION inferred vs. Scheffer 2020 (DOI 10.7554/eLife.57443)",
+    "Q4": "CrossrefReferenceResolver (DOI 10.7554/eLife.57443)",
+    "Q5": "Out-of-scope for MAFS scholarly stack; ENTITY_RESOLUTION_REQUIRED per admission"
+  },
+  "resolver_provenance_completeness": {
+    "Q1": "candidate_pointer_id='CP-002' (preserved); evidence_id='CE-9239dce9440bd171' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-002' (preserved per §3.A)",
+    "Q2": "candidate_pointer_id='CP-030' (preserved); evidence_id='CE-d8ecaa90a91b0848' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-004' (preserved per §3.A)",
+    "Q4": "candidate_pointer_id='CP-087' (preserved); evidence_id='CE-8039b383cd3ed53d' (derived from canonical DOI+title per §2.1); resolver_invocation_id='RIVR-006' (preserved per §3.A)",
+    "Q3": "N/A (no candidate under bounded search)",
+    "Q5": "N/A (entity-boundary short-circuit)"
+  },
+  "report_negative_evidence_authority": {
+    "Q3_handling": "REPORT.md §2 uses the bounded language: 'no canonical candidate recovered under the bounded search; the current evidence supports likely conflation with Scheffer et al. 2020'. report_validation.py confirms 0 forbidden overclaim hits. Per advisory §2.2 / §3.C, bounded-search absence is preserved.",
+    "validator_call": "python C:\\Users\\Administrator\\AppData\\Roaming\\dsh-desktop\\harness\\skills\\mafs-skill-1-0\\references\\report_validation.py REPORT.md --workspace I:\\u6709\\u8da3\\u7684\\u9879\\u76ee\\mafs_gf_search_v2",
+    "validator_verdict": "REPORT VALIDATION PASS (0 forbidden overclaim hits, bounded language present, 4 artifact-aligned Q rows)"
+  },
+  "artifact_hashes": {
+    "cqs.json": {
+      "sha256": "454e3e8944be6c1f1d7ca875cbe19a3bb9d2a768209043849fef5507ac157e7f",
+      "bytes": 7333
+    },
+    "srp.json": {
+      "sha256": "cf87b6876485a13d228af8b4158938c4c9bde4b1ef5dbb10d448a2c3ac54148a",
+      "bytes": 7527
+    },
+    "budget_envelope.json": {
+      "sha256": "46e2f57a1d49b33262af7383d2dc93c8f9893d10004da9e30a827d0415c6c64f",
+      "bytes": 3268
+    },
+    "integration_binding.json": {
+      "sha256": "3548ae3248019982c5634cbc18b151be3d1a7499d0ef4b2c2a51772b16ac42a0",
+      "bytes": 2211
+    },
+    "discovery_candidate_pointers.json": {
+      "sha256": "25e55c2f536b72904c72821b456f79c1a164920709c404c9e8e47cfd6467022f",
+      "bytes": 50062
+    },
+    "resolved_canonical_evidence.json": {
+      "sha256": "00770b0daaaaaeb99aabc5bfa7517bbe91fa10777aed5fd141ce2086e0840dc5",
+      "bytes": 4553
+    },
+    "REPORT.md": {
+      "sha256": "0b584dd293155cfdaa835b3e808111b5f47ea7dd1140d56a46030a7ac69913db",
+      "bytes": 6394
+    },
+    "mafs_planning.json": {
+      "sha256": "d18845e19460662e65c42cc2339096a6fb7a923643c0068897050b71b10679b7",
+      "bytes": 7796
+    },
+    "run_mafs_gf_v3.py": {
+      "sha256": "42af863f5dba326f6976231f5f018fd22524bfcc9c6df26e919ff8ed1fa0893a",
+      "bytes": 10038
+    },
+    "run_resolve_v2_phase2.py": {
+      "sha256": "6192146042ab6ed3aa35cf81365b9c659d30ad040711413029f778f92193d799",
+      "bytes": 4824
+    }
+  },
+  "main_head_unmodified": "16ac1eb2f9d7dc7d0c86d77cb7e96f928df6dfd0 (verified at v3 driver run time)",
+  "branch_head": "87d9734ac3b247967283d0a7b138ddbe3f06f3d1 (dev/1.0-runtime-hardening, HEAD at v3 start; will be amended by the closeout commit)",
+  "v3_to_v2_semantic_state_comparison": {
+    "Q1": "v2: RESOLVED, evidence_id=CE-9239dce9440bd171; v3: RESOLVED, evidence_id=CE-9239dce9440bd171 (identical, deterministic from canonical DOI+title)",
+    "Q2": "v2: RESOLVED, evidence_id=CE-d8ecaa90a91b0848; v3: RESOLVED, evidence_id=CE-d8ecaa90a91b0848 (identical)",
+    "Q3": "v2: NO_CANONICAL_CANDIDATE; v3: NO_CANONICAL_CANDIDATE (identical bounded negative branch)",
+    "Q4": "v2: RESOLVED, evidence_id=CE-8039b383cd3ed53d; v3: RESOLVED, evidence_id=CE-8039b383cd3ed53d (identical)",
+    "Q5": "v2: ENTITY_RESOLUTION_REQUIRED; v3: ENTITY_RESOLUTION_REQUIRED (boundary preserved)",
+    "Q_final_states_match": true,
+    "provenance_completeness_improved_over_v1": true
+  },
+  "DSH_replay_method": "Mavis-direct (NOT actual DSH session). The v3 driver was invoked by Mavis from a Windows PowerShell session; the deployed DSH Skill is in place at C:\\Users\\Administrator\\AppData\\Roaming\\dsh-desktop\\harness\\skills\\mafs-skill-1-0\\ but was not invoked through the DSH harness in this Mavis session. The advisory's standing rule forbids Mavis-direct as a substitute for the actual DSH acceptance event.",
+  "stop_and_report_conditions": [
+    [
+      "DSH cannot discover the hardened Skill",
+      "NOT OBSERVED — Mavis cannot invoke DSH harness; DSH discovery requires HO/ChatGPT to run a fresh DSH session"
+    ],
+    [
+      "legacy Skill is selected",
+      "NOT OBSERVED — same reason; the legacy skill archive at C:\\Users\\Administrator\\.codex\\skills-archive\\multi_axis_falsification_search-v0.1\\ is verified present (per Phase 2 P2.D1), but DSH selection behavior is harness-specific"
+    ],
+    [
+      "runtime cannot reach READY",
+      "PARTIAL — Mavis-direct doctor.py RUNTIME_READY; DSH-confined-sandbox runtime PENDING"
+    ],
+    [
+      "planning artifact requires CQC/MAFS schema change",
+      "FALSE — mafs_planning.json is a non-canonical lineage artifact; CQC/MAFS schemas unchanged"
+    ],
+    [
+      "explicit selection requires authority redesign",
+      "FALSE — DSH's ask_user_question already provides explicit selection; the v3 planning artifact is selection-agnostic"
+    ],
+    [
+      "CQC pin must change",
+      "FALSE — CQC pin b34a1229 unchanged"
+    ],
+    [
+      "MAFS pin must change",
+      "FALSE — MAFS pin cd09699f unchanged"
+    ],
+    [
+      "new scientific planner appears necessary",
+      "FALSE — mafs_planning.json is a model-authored cognitive artifact that the driver reads; no planner was added; the deterministic layer only executes what the artifact specifies (per §3 allowed: 'small deterministic parser/adapter to execute the artifact')"
+    ],
+    [
+      "auto-selection appears necessary",
+      "FALSE — explicit selection is preserved (DSH ask_user_question); auto-select is FORBIDDEN"
+    ],
+    [
+      "main merge is required to continue",
+      "FALSE — main is unmodified; no merge required"
+    ]
+  ],
+  "what_mavis_did": [
+    "Externalized the model-authored Axis / SearchOrder into mafs_planning.json (schema_version: mafs-skill-planning.v1) per advisory §2 / §4",
+    "Wrote run_mafs_gf_v3.py that consumes the planning artifact (no hardcoded _search_orders) per advisory §3",
+    "Re-ran the v3 driver + Phase 2 resolve against the new discovery, producing 5/5 Q final states (semantically equivalent to v1+v2 baselines, with explicit Q3 per advisory §2.5 correction A)",
+    "Verified report_validation.py fail-closed PASS on the v2 REPORT.md (no overclaim)",
+    "Anchored planning_pointer into integration_binding.json per lineage_glue.md"
+  ],
+  "what_HO_ChatGPT_must_do": [
+    "Open the DSH Desktop harness and start a fresh DSH session",
+    "Use this exact task prompt: 调用 MAFS Skill 1.0 进行搜索任务：von Reyn et al. 2014/2020 等论文补充材料里的 GF 神经元 ID 清单",
+    "Verify that DSH discovers mafs-skill-1-0 (NOT the legacy multi_axis_falsification_search)",
+    "Let the DSH agent run the chain, observe the runtime READY",
+    "Observe the DSH agent's STOP after discover() emits CandidatePointers",
+    "The DSH agent will use ask_user_question to surface the candidates — the human (HO or operator) MUST make the explicit selection (NOT a pre-seeded Q1/Q2/Q4 list)",
+    "After explicit selection, the DSH agent runs resolve() on only the selected candidates",
+    "The DSH agent writes the artifacts and renders the REPORT.md (using report_template.md patterns, fail-closed against report_validation.py)",
+    "The DSH session produces a new dsh_integration_trace_v3.json (overwrite the Mavis-filled fields: dsh_session_id, dsh_skill_discovery, runtime_ready, stop_checkpoint_observed, explicit_selection_observed, selection_actor, selected_question_ids, auto_select_observed, auto_resolve_observed, approval_total, approval_category_counts)",
+    "The fresh DSH trace is then merged into the Mavis v3 trace by replacing the PENDING fields; the merged trace is the v3 submission to HO+ChatGPT Final Acceptance"
+  ],
+  "next_step": "STOP — Mavis cannot complete the DSH-specific acceptance events. Return to HO/ChatGPT for actual DSH session replay + Final Acceptance.",
+  "notes": [
+    "The advisory says 'Mavis-direct ≠ DSH-agent replay' (advisory §0). The Mavis-direct v3 run proves the planning artifact is correctly emitted and consumed; it does NOT prove that a DSH session will emit the same artifacts, because the DSH session's actual stop, selection, and resolve steps are harness-mediated.",
+    "All deterministic contract surface (evidence_id stable, bounded language preserved, provenance completeness, planning artifact consumption) is verified in this Mavis-direct run. The non-deterministic harness-mediated surface (DSH session events) is recorded as PENDING and must be filled by an actual DSH session.",
+    "main HEAD is verified unchanged at 16ac1eb2... throughout the v3 work."
+  ]
+}

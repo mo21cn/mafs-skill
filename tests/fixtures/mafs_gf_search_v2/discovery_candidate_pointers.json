@@ -1,6 +1,7 @@
 {
   "Q1": {
     "search_order_id": "SO-Q1-vonReyn-2014",
+    "mafs_axis_id": "AX-Q1-vonReyn-2014",
     "compiled_query": "\"von Reyn\" AND \"giant fiber\" AND \"Drosophila\"",
     "expected_doi": "10.1038/nn.3741",
     "expected_pmid": "24908103",
@@ -321,6 +322,7 @@
   },
   "Q2": {
     "search_order_id": "SO-Q2-Namiki-2018",
+    "mafs_axis_id": "AX-Q2-Namiki-2018",
     "compiled_query": "\"Namiki\" AND \"descending neuron\" AND (\"nomenclature\" OR \"giant fiber\")",
     "expected_doi": "10.7554/eLife.34272",
     "expected_pmid": "29943730",
@@ -641,6 +643,7 @@
   },
   "Q3": {
     "search_order_id": "SO-Q3-vonReyn-2020",
+    "mafs_axis_id": "AX-Q3-vonReyn-2020",
     "compiled_query": "\"von Reyn\" AND \"2020\" AND \"Drosophila\" AND \"giant fiber\"",
     "expected_doi": null,
     "expected_pmid": null,
@@ -961,6 +964,7 @@
   },
   "Q4": {
     "search_order_id": "SO-Q4-Scheffer-2020",
+    "mafs_axis_id": "AX-Q4-Scheffer-2020",
     "compiled_query": "\"Scheffer\" AND (\"hemibrain\" OR \"connectome\")",
     "expected_doi": "10.7554/eLife.57443",
     "expected_pmid": "32880371",
@@ -1247,10 +1251,10 @@
             "schema_version": "3.0-p1",
             "candidate_pointer_id": "CP-110",
             "provider": "crossref_v1",
-            "provider_result_id": "10.1007/978-1-0716-1006-0_275",
+            "provider_result_id": "10.1007/978-1-4614-7320-6_275-2",
             "title_hint": "Connectome, Drosophila",
             "identifier_hints": {
-              "doi": "10.1007/978-1-0716-1006-0_275",
+              "doi": "10.1007/978-1-4614-7320-6_275-2",
               "pmid": null
             },
             "rank": 4,
@@ -1260,10 +1264,10 @@
             "schema_version": "3.0-p1",
             "candidate_pointer_id": "CP-111",
             "provider": "crossref_v1",
-            "provider_result_id": "10.1007/978-1-4614-7320-6_275-2",
+            "provider_result_id": "10.1007/978-1-0716-1006-0_275",
             "title_hint": "Connectome, Drosophila",
             "identifier_hints": {
-              "doi": "10.1007/978-1-4614-7320-6_275-2",
+              "doi": "10.1007/978-1-0716-1006-0_275",
               "pmid": null
             },
             "rank": 5,
@@ -1280,12 +1284,13 @@
     ]
   },
   "Q5": {
-    "search_order_id": "SO-Q5-entity",
+    "search_order_id": "SO-Q5-entity-anchor",
+    "mafs_axis_id": "AX-Q5-entity-anchor",
     "compiled_query": null,
     "expected_doi": null,
     "expected_pmid": null,
     "status": "ENTITY_RESOLUTION_REQUIRED",
-    "rationale": "Production MAFS v3.0 scholarly stack lacks FlyWire / VFB / hemibrain dataset adapters. The exact GF (DNp01) body IDs in FlyWire v783 and hemibrain v1.2.1 cannot be resolved by this stack. HO-supplied seeds are HISTORICAL_ENTITY_ANCHOR_UNVERIFIED per entity_anchor_oracle.json.",
+    "rationale": "Q5 boundary preserved per planning artifact: MAFS scholarly stack has no FlyWire / VFB / hemibrain dataset adapter. The exact body IDs are HISTORICAL_ENTITY_ANCHOR_UNVERIFIED.",
     "entity_anchor_references": [
       "E1-FlyWire-v783-right-GF",
       "E2-FlyWire-v783-left-GF",

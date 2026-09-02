@@ -58,5 +58,10 @@
   ],
   "unfunded_required_routes": [],
   "status": "READY_FOR_MAFS_PREFLIGHT",
-  "stale_state": "CURRENT"
+  "stale_state": "CURRENT",
+  "mafs_planning_pointer": {
+    "artifact": "I:\\有趣的项目\\mafs_gf_search_v2\\mafs_planning.json",
+    "artifact_sha256": "d18845e19460662e65c42cc2339096a6fb7a923643c0068897050b71b10679b7",
+    "schema_version": "mafs-skill-planning.v1"
+  }
 }

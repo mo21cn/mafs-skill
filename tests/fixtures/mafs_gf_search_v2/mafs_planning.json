@@ -1,0 +1,173 @@
+{
+  "schema_version": "mafs-skill-planning.v1",
+  "planning_artifact_version": "gf-em-2026-09-03-v1",
+  "authored_by": "model",
+  "authored_at": "2026-09-03T01:42:30+08:00",
+  "model_authored_provenance_marker": "Originally authored inline in run_mafs_gf.py::_search_orders() (v1+v2 replay). Externalized per `MAFS-SKILL-1.0-PHASE-3-FINAL-v0.1` §2 (planning artifact emission) and §3 (driver consumption rule). The model retains scientific planning meaning; the driver only executes what this artifact specifies.",
+  "run_identity": "mafs-gf-em-2026-09-03-v2",
+  "source_question_references": {
+    "cqs_id": "CQS-CQC-P0-A",
+    "cqs_source_path": "CQC/examples/outputs/cqs_A_gf_em.json",
+    "cqs_sha256": "454e3e8944be6c1f1d7ca875cbe19a3bb9d2a768209043849fef5507ac157e7f",
+    "srp_id": "SRP-GF-EM-A",
+    "budget_envelope_id": "BUDGET-GF-EM-A"
+  },
+  "axes": [
+    {
+      "mafs_axis_id": "AX-Q1-vonReyn-2014",
+      "question_label": "Q1",
+      "requirement_id": "R01",
+      "route_id": "paper_identity_crossref",
+      "rationale": "von Reyn et al. 2014 introduced the GF spike-timing framework the user references; Crossref is the authoritative identity source for that paper."
+    },
+    {
+      "mafs_axis_id": "AX-Q2-Namiki-2018",
+      "question_label": "Q2",
+      "requirement_id": "R03",
+      "route_id": "nomenclature_primary_source",
+      "rationale": "Namiki et al. 2018 is the canonical nomenclature primary source for descending neurons including DNp01/GF identity."
+    },
+    {
+      "mafs_axis_id": "AX-Q3-vonReyn-2020",
+      "question_label": "Q3",
+      "requirement_id": "R02",
+      "route_id": "negative_branch_search",
+      "rationale": "Verify whether a 'von Reyn 2020 GF paper' exists; this is the negative-branch slot of the narrative."
+    },
+    {
+      "mafs_axis_id": "AX-Q4-Scheffer-2020",
+      "question_label": "Q4",
+      "requirement_id": "R04",
+      "route_id": "historical_lineage_check",
+      "rationale": "Scheffer et al. 2020 hemibrain connectome paper is the most-cited reference for the GF lineage after the 2014 framework."
+    },
+    {
+      "mafs_axis_id": "AX-Q5-entity-anchor",
+      "question_label": "Q5",
+      "requirement_id": "R05",
+      "route_id": "dataset_entity_adapter",
+      "rationale": "Dataset-entity identity (FlyWire / VFB / hemibrain body IDs) is outside the MAFS scholarly stack scope; the entity-anchor route is held as RESERVE_CONDITIONAL."
+    }
+  ],
+  "search_orders": [
+    {
+      "mafs_search_order_id": "SO-Q1-vonReyn-2014",
+      "mafs_axis_id": "AX-Q1-vonReyn-2014",
+      "question_label": "Q1",
+      "expected_doi": "10.1038/nn.3741",
+      "expected_pmid": "24908103",
+      "search_intent": {
+        "author": "von Reyn",
+        "year": 2014,
+        "title": "spike-timing action selection",
+        "concepts": ["Drosophila", "giant fiber"]
+      },
+      "query_re": {
+        "op": "AND",
+        "children": [
+          {"op": "PHRASE", "phrase": "von Reyn"},
+          {"op": "PHRASE", "phrase": "giant fiber"},
+          {"op": "PHRASE", "phrase": "Drosophila"}
+        ]
+      }
+    },
+    {
+      "mafs_search_order_id": "SO-Q2-Namiki-2018",
+      "mafs_axis_id": "AX-Q2-Namiki-2018",
+      "question_label": "Q2",
+      "expected_doi": "10.7554/eLife.34272",
+      "expected_pmid": "29943730",
+      "search_intent": {
+        "author": "Namiki",
+        "year": 2018,
+        "title": "descending sensory-motor pathways",
+        "concepts": ["Drosophila", "descending neuron", "nomenclature"]
+      },
+      "query_re": {
+        "op": "AND",
+        "children": [
+          {"op": "PHRASE", "phrase": "Namiki"},
+          {"op": "PHRASE", "phrase": "descending neuron"},
+          {"op": "OR", "children": [
+            {"op": "PHRASE", "phrase": "nomenclature"},
+            {"op": "PHRASE", "phrase": "giant fiber"}
+          ]}
+        ]
+      }
+    },
+    {
+      "mafs_search_order_id": "SO-Q3-vonReyn-2020",
+      "mafs_axis_id": "AX-Q3-vonReyn-2020",
+      "question_label": "Q3",
+      "expected_doi": null,
+      "expected_pmid": null,
+      "search_intent": {
+        "author": "von Reyn",
+        "year": 2020,
+        "title": "giant fiber",
+        "concepts": ["Drosophila"]
+      },
+      "query_re": {
+        "op": "AND",
+        "children": [
+          {"op": "PHRASE", "phrase": "von Reyn"},
+          {"op": "PHRASE", "phrase": "2020"},
+          {"op": "PHRASE", "phrase": "Drosophila"},
+          {"op": "PHRASE", "phrase": "giant fiber"}
+        ]
+      }
+    },
+    {
+      "mafs_search_order_id": "SO-Q4-Scheffer-2020",
+      "mafs_axis_id": "AX-Q4-Scheffer-2020",
+      "question_label": "Q4",
+      "expected_doi": "10.7554/eLife.57443",
+      "expected_pmid": "32880371",
+      "search_intent": {
+        "author": "Scheffer",
+        "year": 2020,
+        "title": "connectome adult Drosophila central brain",
+        "concepts": ["hemibrain"]
+      },
+      "query_re": {
+        "op": "AND",
+        "children": [
+          {"op": "PHRASE", "phrase": "Scheffer"},
+          {"op": "OR", "children": [
+            {"op": "PHRASE", "phrase": "hemibrain"},
+            {"op": "PHRASE", "phrase": "connectome"}
+          ]}
+        ]
+      }
+    },
+    {
+      "mafs_search_order_id": "SO-Q5-entity-anchor",
+      "mafs_axis_id": "AX-Q5-entity-anchor",
+      "question_label": "Q5",
+      "expected_doi": null,
+      "expected_pmid": null,
+      "search_intent": null,
+      "query_re": null,
+      "note": "Q5 is ENTITY_RESOLUTION_REQUIRED. The MAFS scholarly stack has no dataset adapter for FlyWire / VFB / hemibrain body IDs. The driver MUST short-circuit Q5 per Phase 2 lineage_glue contract; no discovery ladder is emitted for Q5."
+    }
+  ],
+  "route_requirement_linkage": {
+    "R01": {"axis": "AX-Q1-vonReyn-2014", "search_order": "SO-Q1-vonReyn-2014", "allocation": "AL01", "activation": "COMMITTED"},
+    "R02": {"axis": "AX-Q3-vonReyn-2020", "search_order": "SO-Q3-vonReyn-2020", "allocation": "AL02", "activation": "COMMITTED"},
+    "R03": {"axis": "AX-Q2-Namiki-2018", "search_order": "SO-Q2-Namiki-2018", "allocation": "AL03", "activation": "COMMITTED"},
+    "R04": {"axis": "AX-Q4-Scheffer-2020", "search_order": "SO-Q4-Scheffer-2020", "allocation": "AL04", "activation": "COMMITTED"},
+    "R05": {"axis": "AX-Q5-entity-anchor", "search_order": "SO-Q5-entity-anchor", "allocation": "AL05", "activation": "RESERVE_CONDITIONAL"}
+  },
+  "consumption_rule": {
+    "driver_path": "I:\\u6709\\u8da3\\u7684\\u9879\\u76ee\\mafs_gf_search_v2\\run_mafs_gf.py",
+    "read_pattern": "model authors planning -> write mafs_planning.json -> driver reads mafs_planning.json -> MAFS executes what the artifact specifies",
+    "forbidden": "hard-coding the effective scientific plan only inside _search_orders()",
+    "allowed": "small deterministic parser/adapter to execute the artifact; it may NOT reinterpret or improve scientific meaning"
+  },
+  "notes": [
+    "This artifact records planning the model authored for the GF/EM narrative. It is NOT a new CQC authority object, NOT a new MAFS schema owner, and NOT a deterministic planning product (per advisory §4).",
+    "Q5's search_order has a `null` search_intent and query_re by design — the driver's Q5 short-circuit (per lineage_glue.md) reads `expected_doi == null` and `query_re == null` to recognize the entity-resolution boundary.",
+    "Axis/SearchOrder IDs are stable identifiers; the SHA-256 of this file is recorded in the Phase 3-Final trace (dsh_integration_trace_v3.json) and the closeout note (per advisory §16).",
+    "If a real DSH session changes the selection (e.g., user picks only Q1 and Q3 in the current replay), the driver MUST consume the new selection from this artifact (or a successor artifact), NOT a pre-seeded list from the earlier GF run (per advisory §9)."
+  ]
+}
