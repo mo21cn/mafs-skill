@@ -68,6 +68,12 @@ PORTABLE_INCLUDE = (
     "release/SHA256SUMS.txt",
 )
 
+# Bytecode / cache artifacts are NEVER included in the portable
+# ZIP. They are platform- and Python-build-specific (cpython-3X),
+# which would break cross-platform reproducibility.
+EXCLUDE_DIR_NAMES = {"__pycache__", ".git", ".github"}
+EXCLUDE_FILE_SUFFIXES = (".pyc", ".pyo", ".pyd")
+
 
 def file_sha256(p: Path) -> str:
     h = hashlib.sha256()
@@ -79,8 +85,9 @@ def canonical_file_list() -> list[tuple[Path, str]]:
     """Return [(abs_path, arcname_in_zip), ...] sorted by arcname.
 
     Skips paths that do not exist (so the build does not crash on
-    missing optional files). The arcname always uses forward slashes
-    and is rooted under `mafs-skill/`.
+    missing optional files). Excludes bytecode / cache / VCS
+    artifacts (they are not source). The arcname always uses
+    forward slashes and is rooted under `mafs-skill/`.
     """
     out: list[tuple[Path, str]] = []
     for rel in PORTABLE_INCLUDE:
@@ -90,10 +97,20 @@ def canonical_file_list() -> list[tuple[Path, str]]:
             continue
         if src.is_dir():
             for p in sorted(src.rglob("*")):
-                if p.is_file():
-                    arcname = (Path("mafs-skill") / rel / p.relative_to(src)).as_posix()
-                    out.append((p, arcname))
+                if not p.is_file():
+                    continue
+                # Skip excluded directory contents. We check the
+                # path parts rather than just the basename so we
+                # catch nested __pycache__ directories.
+                if any(part in EXCLUDE_DIR_NAMES for part in p.parts):
+                    continue
+                if p.suffix in EXCLUDE_FILE_SUFFIXES:
+                    continue
+                arcname = (Path("mafs-skill") / rel / p.relative_to(src)).as_posix()
+                out.append((p, arcname))
         else:
+            if src.suffix in EXCLUDE_FILE_SUFFIXES:
+                continue
             arcname = (Path("mafs-skill") / rel).as_posix()
             out.append((src, arcname))
     out.sort(key=lambda pair: pair[1])
